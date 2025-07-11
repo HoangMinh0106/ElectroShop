@@ -1,0 +1,148 @@
+﻿@{
+    ViewData["Title"] = "Trang Chủ";
+}
+<style>
+    body {
+        background-color: #1a1a1a;
+    }
+
+    label, h3 {
+        color: white;
+    }
+</style>
+
+<!--Hiển thị thông báo thành công nếu có-->
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert" id="orderSuccessAlert">
+        @TempData["Message"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <style>
+        .fade-out {
+            opacity: 1;
+            transition: opacity 1s ease-out;
+        }
+
+        .fade-out.hidden {
+            opacity: 0;
+        }
+    </style>
+
+    <script>
+        setTimeout(function () {
+            var alertBox = document.getElementById('orderSuccessAlert');
+            if (alertBox) {
+                alertBox.classList.add('fade-out');
+                alertBox.classList.add('hidden');
+                setTimeout(function () {
+                    alertBox.style.display = 'none';
+                }, 1000); // chờ hiệu ứng kết thúc
+            }
+        }, 1000); // sau 3 giây bắt đầu ẩn
+    </script>
+}
+
+
+
+
+<!-- Slider -->
+<div id="homeCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
+    <div class="carousel-inner">
+        <div class="carousel-item active">
+            <img src="~/Image/banner_1.png" class="d-block w-100" alt="Banner 1">
+        </div>
+        <div class="carousel-item">
+            <img src="~/Image/banner_2.png" class="d-block w-100" alt="Banner 2">
+        </div>
+        <div class="carousel-item">
+            <img src="~/Image/banner_3.png" class="d-block w-100" alt="Banner 3">
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#homeCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#homeCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+    </button>
+</div>
+
+<!-- Danh mục -->
+<div class="container mb-5">
+    <div class="row">
+        @foreach (var item in ViewBag.Categories as List<WebBanHang.Models.Category>)
+        {
+            <div class="col-md-3 col-sm-6 mb-4">
+                <a asp-controller="Home" asp-action="ProductsByCategory" asp-route-categoryId="@item.Id" style="text-decoration:none;">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body text-center">
+                            <h5 class="card-title">@item.Name</h5>
+                            <p class="card-text text-muted">@item.Description</p>
+                        </div>
+                    </div>
+                </a>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Tìm kiếm sản phẩm -->
+<div class="container mb-4">
+    <form asp-controller="Home" asp-action="Index" method="get" class="row g-3 align-items-center">
+        <div class="col-auto">
+            <label for="searchTerm" class="col-form-label text-white">Tìm kiếm:</label>
+        </div>
+        <div class="col-auto">
+            <input type="text" class="form-control" id="searchTerm" name="searchTerm" placeholder="Nhập tên sản phẩm" value="@ViewBag.SearchTerm" />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-primary">Tìm</button>
+        </div>
+    </form>
+</div>
+
+
+<!-- Bộ lọc giá -->
+<div class="container mb-4">
+    <form asp-controller="Home" asp-action="Index" method="get" class="row g-3 align-items-center">
+        <div class="col-auto">
+            <label for="minPrice" class="col-form-label">Giá từ:</label>
+        </div>
+        <div class="col-auto">
+            <input type="number" class="form-control" id="minPrice" name="minPrice" value="@ViewBag.MinPrice" />
+        </div>
+        <div class="col-auto">
+            <label for="maxPrice" class="col-form-label">đến:</label>
+        </div>
+        <div class="col-auto">
+            <input type="number" class="form-control" id="maxPrice" name="maxPrice" value="@ViewBag.MaxPrice" />
+        </div>
+        <div class="col-auto">
+            <button type="submit" class="btn btn-outline-light">Lọc giá</button>
+        </div>
+    </form>
+</div>
+
+<!-- Sản phẩm nổi bật -->
+<h3 class="text-white mb-4">Sản phẩm nổi bật </h3>
+<div class="row">
+    @foreach (var product in ViewBag.Products as List<WebBanHang.Models.Product>)
+    {
+        <div class="col-md-3 mb-4">
+            <div class="card h-100 shadow">
+                <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name"
+                    style="height: 200px; object-fit: cover;" />
+                <div class="card-body">
+                    <h5 class="card-title">@product.Name</h5>
+                    <p class="card-text text-muted">@product.Description</p>
+                    <p class="card-text text-danger fw-bold">@string.Format("{0:N0}₫", product.Price)</p>
+                    <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@product.Id"
+                        class="btn btn-success btn-sm">Thêm vào giỏ hàng</a>
+                    <a asp-controller="Home" asp-action="Details" asp-route-id="@product.Id"
+                        class="btn btn-outline-primary btn-sm mt-2">Xem chi tiết</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>

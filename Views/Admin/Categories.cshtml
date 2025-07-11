@@ -1,0 +1,43 @@
+@model List<WebBanHang.Models.Category>
+
+@{
+    ViewData["Title"] = "Quản lý danh mục sản phẩm";
+}
+
+<h2 class="mb-3">Quản lý danh mục sản phẩm</h2>
+
+<p><a class="btn btn-success mb-3" asp-action="CreateCategory">➕ Thêm danh mục</a></p>
+<p><a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">Quay lại</a></p>
+
+<table class="table table-bordered table-hover">
+    <thead class="table-dark">
+        <tr>
+            <th>ID</th>
+            <th>Tên danh mục</th>
+            <th class="text-center">Hành động</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            foreach (var category in Model)
+            {
+                <tr>
+                    <td>@category.Id</td>
+                    <td>@category.Name</td>
+                    <td class="text-center">
+                        <a class="btn btn-sm btn-primary" asp-action="EditCategory" asp-route-id="@category.Id">✏️ Sửa</a>
+                        <a class="btn btn-sm btn-danger" asp-action="DeleteCategory" asp-route-id="@category.Id"
+                           onclick="return confirm('Bạn có chắc muốn xóa danh mục này không?');">🗑️ Xóa</a>
+                    </td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="3" class="text-center text-muted">Không có danh mục nào.</td>
+            </tr>
+        }
+    </tbody>
+</table>

@@ -1,0 +1,25 @@
+@model List<WebBanHang.Models.OrderViewModel>
+
+<h2>Quản lý đơn hàng</h2>
+<p><a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">Quay lại</a></p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>Mã đơn</th>
+            <th>Người đặt</th>
+            <th>Ngày đặt</th>
+            <th>Tổng tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+    @foreach (var order in Model)
+    {
+        <tr>
+            <td>@order.OrderId</td>
+            <td>@order.Username</td>
+            <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
+            <td>@order.TotalAmount.ToString("N0") VNĐ</td>
+        </tr>
+    }
+    </tbody>
+</table>

@@ -1,0 +1,106 @@
+@model IEnumerable<dynamic>
+@{
+    ViewData["Title"] = "Thống kê doanh thu";
+}
+
+<h2>Doanh thu chi tiết</h2>
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Mã đơn</th>
+            <th>Ngày</th>
+            <th>Tổng tiền</th>
+        </tr>
+    </thead>
+    <tbody>
+    @if (Model != null && Model.Count() > 0)
+    {
+        foreach (var o in Model)
+        {
+            <tr>
+                <td>@o.Id</td>
+                <td>@Convert.ToDateTime(o.OrderDate)</td>
+                <td>@String.Format("{0:N0} VNĐ", o.TotalAmount)</td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr><td colspan="3">Không có dữ liệu.</td></tr>
+    }
+    </tbody>
+</table>
+
+<hr />
+
+<h3>Thống kê theo ngày</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr><th>Ngày</th><th>Doanh thu</th></tr>
+    </thead>
+    <tbody>
+    @if (ViewBag.RevenueByDay != null)
+    {
+        foreach (var item in ViewBag.RevenueByDay)
+        {
+            <tr>
+                <td>@item.Date</td> <!-- đã format sẵn trong controller -->
+                <td>@string.Format("{0:N0} VNĐ", (decimal)item.Total)</td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr><td colspan="2">Không có dữ liệu theo ngày.</td></tr>
+    }
+    </tbody>
+</table>
+
+<h3>Thống kê theo tháng</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr><th>Tháng</th><th>Doanh thu</th></tr>
+    </thead>
+    <tbody>
+    @if (ViewBag.RevenueByMonth != null)
+    {
+        foreach (var item in ViewBag.RevenueByMonth)
+        {
+            <tr>
+                <td>@item.Month</td> <!-- VD: 07/2025 -->
+                <td>@string.Format("{0:N0} VNĐ", (decimal)item.Total)</td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr><td colspan="2">Không có dữ liệu theo tháng.</td></tr>
+    }
+    </tbody>
+</table>
+
+<h3>Thống kê theo năm</h3>
+<table class="table table-bordered">
+    <thead>
+        <tr><th>Năm</th><th>Doanh thu</th></tr>
+    </thead>
+    <tbody>
+    @if (ViewBag.RevenueByYear != null)
+    {
+        foreach (var item in ViewBag.RevenueByYear)
+        {
+            <tr>
+                <td>@item.Year</td>
+                <td>@string.Format("{0:N0} VNĐ", (decimal)item.Total)</td>
+            </tr>
+        }
+    }
+    else
+    {
+        <tr><td colspan="2">Không có dữ liệu theo năm.</td></tr>
+    }
+    </tbody>
+</table>
+
+<p><strong>Tổng doanh thu:</strong> @((ViewBag.TotalRevenue ?? 0M).ToString("N0")) VNĐ</p>
+<a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">Quay lại</a>

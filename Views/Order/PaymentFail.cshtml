@@ -1,0 +1,15 @@
+@{
+    ViewData["Title"] = "Thanh toán Thất bại";
+}
+
+<div class="alert alert-danger" role="alert">
+    <h4 class="alert-heading">Thanh toán thất bại!</h4>
+    <p>Rất tiếc, đã có lỗi xảy ra trong quá trình thanh toán qua VNPAY.</p>
+    <hr>
+    @if (TempData["Message"] != null)
+    {
+        <p class="mb-0"><strong>Lý do:</strong> @TempData["Message"]</p>
+    }
+</div>
+
+<a asp-controller="Cart" asp-action="Index" class="btn btn-secondary">Quay lại giỏ hàng</a>

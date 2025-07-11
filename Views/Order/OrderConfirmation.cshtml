@@ -1,0 +1,34 @@
+@model WebBanHang.Models.Order
+
+@{
+    ViewData["Title"] = "Đặt Hàng Thành Công";
+}
+
+<div class="container text-center mt-5">
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["Message"]
+        </div>
+    }
+
+    <div class="card">
+        <div class="card-header bg-success text-white">
+            <h3 class="mb-0">Đặt Hàng Thành Công! 🎉</h3>
+        </div>
+        <div class="card-body">
+            <h5 class="card-title">Cảm ơn bạn đã mua hàng!</h5>
+            <p class="card-text">Chi tiết đơn hàng của bạn:</p>
+            <ul class="list-group list-group-flush">
+                <li class="list-group-item"><strong>Mã đơn hàng:</strong> #@Model.Id</li>
+                <li class="list-group-item"><strong>Khách hàng:</strong> @Model.CustomerName</li>
+                <li class="list-group-item"><strong>Địa chỉ:</strong> @Model.Address</li>
+                <li class="list-group-item"><strong>Phương thức thanh toán:</strong> @Model.PaymentMethod</li>
+            </ul>
+        </div>
+        <div class="card-footer text-muted">
+            <p>Chúng tôi sẽ liên hệ với bạn để xác nhận đơn hàng trong thời gian sớm nhất.</p>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Về trang chủ</a>
+        </div>
+    </div>
+</div>

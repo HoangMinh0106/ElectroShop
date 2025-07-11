@@ -1,0 +1,92 @@
+@{
+    ViewData["Title"] = "Đăng nhập";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body {
+        background-color: #1a1a1a;
+    }
+
+    .login-wrapper {
+        max-width: 400px;
+        margin: 60px auto;
+        background: #ffffff;
+        border-radius: 10px;
+        padding: 30px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .login-title {
+        font-size: 24px;
+        font-weight: bold;
+        color: #d70018; /* đỏ chủ đạo giống Shopee */
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .form-label {
+        font-weight: 500;
+        color: #333;
+    }
+
+    .form-control {
+        border-radius: 8px;
+        padding: 10px;
+    }
+
+    .btn-login {
+        background-color: #d70018;
+        color: white;
+        font-weight: 600;
+        width: 100%;
+        border-radius: 8px;
+        padding: 10px;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-login:hover {
+        background-color: #a80014;
+    }
+
+    .login-footer {
+        margin-top: 15px;
+        text-align: center;
+        font-size: 14px;
+    }
+
+    .login-footer a {
+        color: #d70018;
+        text-decoration: none;
+    }
+
+    .login-footer a:hover {
+        text-decoration: underline;
+    }
+</style>
+
+<div class="login-wrapper">
+    <div class="login-title">Đăng nhập vào ElectroShop</div>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger text-center">@ViewBag.Error</div>
+    }
+
+    <form asp-action="Login" method="post">
+        <div class="mb-3">
+            <label class="form-label">Tên đăng nhập</label>
+            <input name="username" class="form-control" placeholder="Nhập tên đăng nhập" required />
+        </div>
+        <div class="mb-3">
+            <label class="form-label">Mật khẩu</label>
+            <input name="password" type="password" class="form-control" placeholder="Nhập mật khẩu" required />
+        </div>
+        <button type="submit" class="btn btn-login">Đăng nhập</button>
+    </form>
+
+    <div class="login-footer mt-3" style="color: #333;">
+        Chưa có tài khoản?
+        <a asp-controller="Account" asp-action="Register">Đăng ký ngay</a>
+    </div>
+</div>

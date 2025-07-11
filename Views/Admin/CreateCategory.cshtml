@@ -1,0 +1,18 @@
+@model WebBanHang.Models.Category
+
+<h2>Thêm danh mục mới</h2>
+
+<form asp-action="CreateCategory" method="post">
+    <div class="mb-3">
+        <label for="Name" class="form-label">Tên danh mục</label>
+        <input asp-for="Name" class="form-control" />
+        <span asp-validation-for="Name" class="text-danger"></span>
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lưu</button>
+    <a asp-action="Categories" class="btn btn-secondary">Quay lại</a>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

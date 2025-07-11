@@ -1,0 +1,94 @@
+@model IEnumerable<WebBanHang.Models.Voucher>
+
+@{
+    ViewData["Title"] = "Quản lý Voucher";
+}
+
+<h1>Quản lý Voucher</h1>
+
+<p>
+    <a asp-action="CreateVoucher" class="btn btn-primary">Tạo Voucher mới</a>
+</p>
+<p><a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">Quay lại</a></p>
+
+@if (TempData["Message"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert" id="orderSuccessAlert">
+        @TempData["Message"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+
+    <style>
+        .fade-out {
+            opacity: 1;
+            transition: opacity 1s ease-out;
+        }
+
+        .fade-out.hidden {
+            opacity: 0;
+        }
+    </style>
+
+    <script>
+        setTimeout(function () {
+            var alertBox = document.getElementById('orderSuccessAlert');
+            if (alertBox) {
+                alertBox.classList.add('fade-out');
+                alertBox.classList.add('hidden');
+                setTimeout(function () {
+                    alertBox.style.display = 'none';
+                }, 1000); // chờ hiệu ứng kết thúc
+            }
+        }, 1000); // sau 3 giây bắt đầu ẩn
+    </script>
+}
+
+
+<table class="table table-bordered table-striped">
+    <thead>
+        <tr>
+            <th>Mã Code</th>
+            <th>Loại giảm giá</th>
+            <th>Giá trị</th>
+            <th>Đơn hàng tối thiểu</th>
+            <th>Ngày hết hạn</th>
+            <th>Kích hoạt</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Code</td>
+                <td>
+                    @if (item.DiscountType == WebBanHang.Models.DiscountType.Percentage)
+                    {
+                        <span>Phần trăm</span>
+                    }
+                    else
+                    {
+                        <span>Số tiền cố định</span>
+                    }
+                </td>
+                <td>
+                    @if (item.DiscountType == WebBanHang.Models.DiscountType.Percentage)
+                    {
+                        <span>@item.DiscountValue %</span>
+                    }
+                    else
+                    {
+                        <span>@item.DiscountValue.ToString("N0") ₫</span>
+                    }
+                </td>
+                <td>@item.MinAmount.ToString("N0") ₫</td>
+                <td>@item.ExpiryDate.ToString("dd/MM/yyyy")</td>
+                <td>@(item.IsActive ? "Có" : "Không")</td>
+                <td>
+                    <a asp-action="EditVoucher" asp-route-id="@item.Id" class="btn btn-sm btn-warning">Sửa</a>
+                    <a asp-action="DeleteVoucher" asp-route-id="@item.Id" class="btn btn-sm btn-danger">Xóa</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

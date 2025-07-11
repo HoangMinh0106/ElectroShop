@@ -1,0 +1,20 @@
+@model WebBanHang.Models.Category
+
+@{
+    ViewData["Title"] = "Xác nhận xóa danh mục";
+}
+
+<h2>@ViewData["Title"]</h2>
+
+<h3>Bạn có chắc chắn muốn xóa danh mục này không?</h3>
+
+<div class="mb-3">
+    <strong>ID:</strong> @Model.Id <br />
+    <strong>Tên danh mục:</strong> @Model.Name
+</div>
+
+<form asp-action="DeleteCategory" method="post">
+    <input type="hidden" asp-for="Id" />
+    <button type="submit" class="btn btn-danger">Xóa</button>
+    <a asp-action="Categories" class="btn btn-secondary">Hủy</a>
+</form>
