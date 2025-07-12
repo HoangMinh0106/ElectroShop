@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebBanHang.Data;
 
@@ -11,9 +12,11 @@ using WebBanHang.Data;
 namespace DoAnWebNC.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250711165714_Update-Project-9")]
+    partial class UpdateProject9
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -90,26 +93,6 @@ namespace DoAnWebNC.Migrations
                         {
                             Id = 4,
                             Name = "Bàn phím"
-                        },
-                        new
-                        {
-                            Id = 5,
-                            Name = "Chuột"
-                        },
-                        new
-                        {
-                            Id = 6,
-                            Name = "Tai nghe"
-                        },
-                        new
-                        {
-                            Id = 7,
-                            Name = "Bàn ghế"
-                        },
-                        new
-                        {
-                            Id = 8,
-                            Name = "Phụ kiện"
                         });
                 });
 

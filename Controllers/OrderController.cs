@@ -2,12 +2,13 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Http;
 using System;
 using System.Linq;
+using System.Collections.Generic;
 using WebBanHang.Data;
 using WebBanHang.Models;
 using WebBanHang.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
-using WebBanHang.Helpers; // Cần thiết cho Session
+using WebBanHang.Helpers;
 
 namespace WebBanHang.Controllers
 {
@@ -17,7 +18,6 @@ namespace WebBanHang.Controllers
         private readonly VnPayService _vnPayService;
         private readonly IConfiguration _config;
         
-        // Khai báo hằng số cho session keys để tránh lỗi chính tả
         private const string CartSession = "CartSession";
         private const string VoucherSession = "VoucherCode";
 
@@ -28,7 +28,7 @@ namespace WebBanHang.Controllers
             _vnPayService = vnPayService;
         }
 
-        // GET: /Order/Checkout ➜ hiển thị form thanh toán
+        // GET: /Order/Checkout 
         public IActionResult Checkout()
         {
             var cartItems = HttpContext.Session.GetObjectFromJson<List<CartItem>>(CartSession) ?? new List<CartItem>();
@@ -37,6 +37,7 @@ namespace WebBanHang.Controllers
                 TempData["Message"] = "Giỏ hàng trống!";
                 return RedirectToAction("Index", "Cart");
             }
+
             var username = HttpContext.Session.GetString("Username");
             if (string.IsNullOrEmpty(username))
             {
@@ -48,21 +49,53 @@ namespace WebBanHang.Controllers
                 TempData["Message"] = "Không tìm thấy người dùng!";
                 return RedirectToAction("Login", "Account");
             }
+
+            // Tính toán tổng tiền và áp dụng voucher
+            var subTotal = cartItems.Sum(item => (item.Price ?? 0) * item.Quantity);
+            decimal discountAmount = 0;
+            string? appliedVoucherCode = HttpContext.Session.GetString(VoucherSession);
+
+            if (!string.IsNullOrEmpty(appliedVoucherCode))
+            {
+                var voucher = _context.Vouchers.FirstOrDefault(v => v.Code == appliedVoucherCode && v.IsActive && v.ExpiryDate > DateTime.Now);
+                if (voucher != null && subTotal >= voucher.MinAmount)
+                {
+                    discountAmount = voucher.DiscountType == DiscountType.FixedAmount
+                        ? voucher.DiscountValue
+                        : subTotal * (voucher.DiscountValue / 100);
+                }
+            }
+            var grandTotal = subTotal - discountAmount;
+
+
             var model = new CheckoutViewModel
             {
+                CartItems = cartItems,
                 CustomerName = user.Username,
                 Phone = user.PhoneNumber,
-                Address = user.Address
+                Address = user.Address,
+                
+                // Gán các giá trị đã tính toán vào model
+                SubTotal = subTotal,
+                DiscountAmount = discountAmount,
+                GrandTotal = grandTotal
             };
             return View(model);
         }
 
-        // POST: /Order/Checkout ➜ xử lý đặt hàng
+        // POST: /Order/Checkout 
         [HttpPost]
         public IActionResult Checkout(CheckoutViewModel model)
         {
             if (!ModelState.IsValid)
             {
+                 // Nếu model không hợp lệ, cần tải lại thông tin giá để hiển thị lại trang
+                var cartItemsForView = HttpContext.Session.GetObjectFromJson<List<CartItem>>(CartSession) ?? new List<CartItem>();
+                var subTotalForView = cartItemsForView.Sum(item => (item.Price ?? 0) * item.Quantity);
+
+                model.CartItems = cartItemsForView;
+                model.SubTotal = subTotalForView;
+   
                 return View(model);
             }
 
@@ -81,8 +114,7 @@ namespace WebBanHang.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // ======================== PHẦN ĐƯỢC THÊM VÀO ========================
-            // Tính toán lại tổng tiền và áp dụng voucher
+            // Tính toán lại tổng tiền và áp dụng voucher (giữ nguyên để bảo mật)
             var subTotal = cartItems.Sum(item => (item.Price ?? 0) * item.Quantity);
             decimal discountAmount = 0;
             string? appliedVoucherCode = HttpContext.Session.GetString(VoucherSession);
@@ -97,7 +129,6 @@ namespace WebBanHang.Controllers
                         : subTotal * (voucher.DiscountValue / 100);
                 }
             }
-            // ====================== KẾT THÚC PHẦN THÊM VÀO ======================
 
             // Tạo đơn hàng mới với thông tin đã được cập nhật
             var order = new Order
@@ -109,9 +140,9 @@ namespace WebBanHang.Controllers
                 OrderDate = DateTime.Now,
                 PaymentMethod = model.PaymentMethod,
                 PaymentStatus = "Pending",
-                Discount = discountAmount, // Thuộc tính mới
-                VoucherCode = appliedVoucherCode, // Thuộc tính mới
-                TotalAmount = subTotal - discountAmount, // Dùng tổng tiền cuối cùng
+                Discount = discountAmount,
+                VoucherCode = appliedVoucherCode,
+                TotalAmount = subTotal - discountAmount,
                 OrderItems = cartItems.Select(item => new OrderItem
                 {
                     ProductId = item.ProductId ?? 0,
@@ -128,7 +159,7 @@ namespace WebBanHang.Controllers
             {
                 var vnPayModel = new VnPayRequestModel
                 {
-                    Amount = (double)order.TotalAmount, // Gửi đi số tiền đã giảm
+                    Amount = (double)order.TotalAmount,
                     CreatedDate = order.OrderDate,
                     Description = $"{order.CustomerName} thanh toan don hang {order.Id}",
                     FullName = order.CustomerName,
@@ -142,7 +173,7 @@ namespace WebBanHang.Controllers
                 _context.SaveChanges();
 
                 HttpContext.Session.Remove(CartSession);
-                HttpContext.Session.Remove(VoucherSession); // Xóa voucher sau khi đặt hàng
+                HttpContext.Session.Remove(VoucherSession);
                 TempData["Message"] = "Đặt hàng thành công!";
                 return RedirectToAction("OrderConfirmation", new { id = order.Id });
             }
@@ -187,7 +218,7 @@ namespace WebBanHang.Controllers
                 _context.SaveChanges();
 
                 HttpContext.Session.Remove(CartSession);
-                HttpContext.Session.Remove(VoucherSession); // Xóa voucher sau khi đặt hàng
+                HttpContext.Session.Remove(VoucherSession);
                 TempData["Message"] = $"Thanh toán thành công cho đơn hàng #{order.Id}!";
                 return RedirectToAction("OrderConfirmation", new { id = order.Id });
             }

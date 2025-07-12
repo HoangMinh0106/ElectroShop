@@ -41,7 +41,7 @@ namespace WebBanHang.Controllers
 
         public IActionResult DeleteUser(int id)
         {
-             if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role") != "Admin")
                 return RedirectToAction("AccessDenied", "Account");
 
             var user = _context.Users.Find(id);
@@ -70,7 +70,7 @@ namespace WebBanHang.Controllers
 
         public IActionResult CreateCategory()
         {
-             if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role") != "Admin")
                 return RedirectToAction("AccessDenied", "Account");
             return View("~/Views/Admin/CreateCategory.cshtml");
         }
@@ -89,7 +89,7 @@ namespace WebBanHang.Controllers
 
         public IActionResult EditCategory(int id)
         {
-             if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role") != "Admin")
                 return RedirectToAction("AccessDenied", "Account");
             var category = _context.Categories.Find(id);
             if (category == null) return NotFound();
@@ -115,7 +115,7 @@ namespace WebBanHang.Controllers
 
             var category = _context.Categories.Find(id);
             if (category == null) return NotFound();
-            
+
             var productsInCategory = _context.Products.Any(p => p.CategoryId == id);
             if (productsInCategory)
             {
@@ -139,7 +139,7 @@ namespace WebBanHang.Controllers
 
         public IActionResult CreateProduct()
         {
-             if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role") != "Admin")
                 return RedirectToAction("AccessDenied", "Account");
             ViewBag.Categories = _context.Categories.ToList();
             return View("~/Views/Admin/CreateProduct.cshtml");
@@ -150,7 +150,7 @@ namespace WebBanHang.Controllers
         {
             if (ModelState.IsValid)
             {
-                 if (ImageFile != null && ImageFile.Length > 0)
+                if (ImageFile != null && ImageFile.Length > 0)
                 {
                     var fileName = Path.GetRandomFileName() + Path.GetExtension(ImageFile.FileName);
                     var filePath = Path.Combine("wwwroot/Image", fileName);
@@ -170,7 +170,7 @@ namespace WebBanHang.Controllers
 
         public IActionResult EditProduct(int id)
         {
-             if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role") != "Admin")
                 return RedirectToAction("AccessDenied", "Account");
             var product = _context.Products.Find(id);
             if (product == null) return NotFound();
@@ -210,7 +210,7 @@ namespace WebBanHang.Controllers
 
         public IActionResult DeleteProduct(int id)
         {
-             if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role") != "Admin")
                 return RedirectToAction("AccessDenied", "Account");
             var product = _context.Products.Find(id);
             if (product != null)
@@ -226,7 +226,7 @@ namespace WebBanHang.Controllers
         {
             if (HttpContext.Session.GetString("Role") != "Admin")
                 return RedirectToAction("AccessDenied", "Account");
-                
+
             var orders = _context.Orders
                 .Where(o => o.PaymentStatus == "Paid" || o.PaymentStatus == "COD")
                 .OrderByDescending(o => o.OrderDate)
@@ -236,35 +236,35 @@ namespace WebBanHang.Controllers
             ViewBag.RevenueByDay = orders.GroupBy(o => o.OrderDate.Date).Select(g => new { Date = g.Key, Total = g.Sum(x => x.TotalAmount) }).OrderBy(g => g.Date).ToList();
             ViewBag.RevenueByMonth = orders.GroupBy(o => new { o.OrderDate.Year, o.OrderDate.Month }).Select(g => new { Month = new DateTime(g.Key.Year, g.Key.Month, 1), Total = g.Sum(x => x.TotalAmount) }).OrderBy(g => g.Month).ToList();
             ViewBag.RevenueByYear = orders.GroupBy(o => o.OrderDate.Year).Select(g => new { Year = g.Key, Total = g.Sum(x => x.TotalAmount) }).OrderBy(g => g.Year).ToList();
-            
+
             return View("~/Views/Admin/Revenue.cshtml", orders);
         }
 
         // === QUẢN LÝ ĐƠN HÀNG ===
-public IActionResult ManageOrders()
-{
-    if (HttpContext.Session.GetString("Role") != "Admin")
-        return RedirectToAction("AccessDenied", "Account");
-        
-    var ordersWithUsers = _context.Orders
-        .Join(
-            _context.Users,         // Bảng để join
-            order => order.UserId,  // Khóa từ bảng Orders
-            user => user.Id,        // Khóa từ bảng Users
-            (order, user) => new OrderViewModel // Tạo đối tượng mới từ kết quả
-            {
-                OrderId = order.Id,
-                Username = user.Username, // Lấy username từ đối tượng user đã join
-                OrderDate = order.OrderDate,
-                TotalAmount = order.TotalAmount,
-                PaymentMethod = order.PaymentMethod,
-                PaymentStatus = order.PaymentStatus
-            })
-        .OrderByDescending(o => o.OrderDate)
-        .ToList();
+        public IActionResult ManageOrders()
+        {
+            if (HttpContext.Session.GetString("Role") != "Admin")
+                return RedirectToAction("AccessDenied", "Account");
 
-    return View("~/Views/Admin/ManageOrders.cshtml", ordersWithUsers);
-}
+            var ordersWithUsers = _context.Orders
+                .Join(
+                    _context.Users,         // Bảng để join
+                    order => order.UserId,  // Khóa từ bảng Orders
+                    user => user.Id,        // Khóa từ bảng Users
+                    (order, user) => new OrderViewModel // Tạo đối tượng mới từ kết quả
+                    {
+                        OrderId = order.Id,
+                        Username = user.Username, // Lấy username từ đối tượng user đã join
+                        OrderDate = order.OrderDate,
+                        TotalAmount = order.TotalAmount,
+                        PaymentMethod = order.PaymentMethod,
+                        PaymentStatus = order.PaymentStatus
+                    })
+                .OrderByDescending(o => o.OrderDate)
+                .ToList();
+
+            return View("~/Views/Admin/ManageOrders.cshtml", ordersWithUsers);
+        }
 
         // === QUẢN LÝ VOUCHER ===
         public IActionResult Vouchers()
@@ -280,7 +280,7 @@ public IActionResult ManageOrders()
         {
             if (HttpContext.Session.GetString("Role") != "Admin")
                 return RedirectToAction("AccessDenied", "Account");
-                
+
             return View("~/Views/Admin/CreateVoucher.cshtml");
         }
 
@@ -332,7 +332,7 @@ public IActionResult ManageOrders()
             }
             return View("~/Views/Admin/EditVoucher.cshtml", voucher);
         }
-        
+
         public async Task<IActionResult> DeleteVoucher(int id)
         {
             if (HttpContext.Session.GetString("Role") != "Admin")
@@ -345,7 +345,7 @@ public IActionResult ManageOrders()
                 await _context.SaveChangesAsync();
                 TempData["Message"] = "Xóa voucher thành công!";
             }
-            
+
             return RedirectToAction(nameof(Vouchers));
         }
     }

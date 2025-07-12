@@ -4,19 +4,98 @@
     ViewData["Title"] = "Chi tiết sản phẩm";
 }
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-5">
-            <img src="@Model.ImageUrl" class="img-fluid" alt="@Model.Name">
-        </div>
-        <div class="col-md-7">
-            <h2>@Model.Name</h2>
-            <p><strong>Giá:</strong> @string.Format("{0:N0} đ", Model.Price)</p>
-            <p><strong>Mô tả:</strong> @Model.Description</p>
-            <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@Model.Id" class="btn btn-success mt-3 ms-2">
-                Thêm vào giỏ hàng
-            </a>
-            <a asp-action="Index" asp-controller="Home" class="btn btn-secondary mt-3">Quay về trang chủ</a>
+<style>
+    body {
+        background-color: #1a1a1a;
+        color: #f8f9fa;
+    }
+
+    .product-detail-card {
+        background-color: #2c2c2c;
+        border-radius: 15px;
+        padding: 2.5rem;
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .product-image {
+        border-radius: 10px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
+        max-height: 700px;
+        object-fit: cover;
+        width: 100%;
+    }
+
+    .product-title {
+        font-weight: 600;
+        color: #fff;
+    }
+
+    .product-price {
+        color: #ffffff;
+        /* Màu xanh bạc hà nổi bật */
+        font-size: 2.25rem;
+        /* Tăng kích thước giá tiền */
+        font-weight: bold;
+    }
+
+    .product-description {
+        color: #adb5bd;
+        /* Màu chữ mô tả nhẹ nhàng hơn */
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    .btn-custom-red {
+        background-color: #d9232d;
+        border-color: #d9232d;
+        color: white;
+        padding: 12px 25px;
+        /* Tăng kích thước nút */
+        font-weight: 500;
+    }
+
+    .btn-custom-red:hover {
+        background-color: #b01c24;
+        border-color: #a51a21;
+        color: white;
+    }
+
+    .btn-back {
+        padding: 12px 25px;
+        font-weight: 500;
+    }
+
+    hr.style-light {
+        border-top: 1px solid #444;
+        /* Đường kẻ ngang mờ */
+    }
+</style>
+
+<div class="container">
+    <div class="product-detail-card">
+        <div class="row align-items-center">
+            <div class="col-md-6">
+                <img src="@Model.ImageUrl" class="product-image" alt="@Model.Name">
+            </div>
+
+            <div class="col-md-6">
+                <h2 class="product-title mb-3">@Model.Name</h2>
+                <p class="product-price mb-4">@string.Format("{0:N0} đ", Model.Price)</p>
+
+                <h5 class="mt-4">Mô tả sản phẩm</h5>
+                <p class="product-description">@Model.Description</p>
+
+                <hr class="my-4 style-light">
+
+                <div class="d-flex align-items-center">
+                    <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@Model.Id"
+                        class="btn btn-custom-red me-3">
+                        <i class="bi bi-cart-plus-fill"></i> Thêm vào giỏ hàng
+                    </a>
+                    <a asp-action="Index" asp-controller="Home" class="btn btn-outline-light btn-back">Quay về</a>
+                </div>
+            </div>
         </div>
     </div>
 </div>

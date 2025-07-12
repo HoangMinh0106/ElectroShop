@@ -36,7 +36,11 @@ namespace WebBanHang.Data
                 new Category { Id = 1, Name = "Laptop" },
                 new Category { Id = 2, Name = "Laptop Gaming" },
                 new Category { Id = 3, Name = "Màn hình" },
-                new Category { Id = 4, Name = "Bàn phím" }
+                new Category { Id = 4, Name = "Bàn phím" },
+                new Category { Id = 5, Name = "Chuột" },
+                new Category { Id = 6, Name = "Tai nghe" },
+                new Category { Id = 7, Name = "Bàn ghế" },
+                new Category { Id = 8, Name = "Phụ kiện" }
             );
 
             // Dữ liệu mẫu cho Product

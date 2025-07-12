@@ -4,131 +4,239 @@
     ViewData["Title"] = "Giỏ hàng";
 }
 
-<h2>Giỏ hàng của bạn</h2>
+<style>
+    body {
+        background-color: #1a1a1a;
+        color: #f8f9fa;
+    }
 
-@if (TempData["Message"] != null)
+    .section-title {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        text-align: left;
+    }
+
+    /* Bảng giỏ hàng */
+    .cart-table {
+        background-color: #2c2c2c;
+        border-radius: 15px;
+        padding: 1rem;
+    }
+    .cart-table table {
+        width: 100%;
+        color: white; 
+        border-collapse: collapse;
+        background-color: #2c2c2c; /* Đảm bảo nền tối cho toàn bộ bảng */
+    }
+    .cart-table thead th {
+        border-bottom: 1px solid #4a4a4a;
+        color: #adb5bd;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        padding: 1rem;
+        text-align: left;
+    }
+    .cart-table tbody td {
+        vertical-align: middle;
+        padding: 1rem;
+        border-top: 1px solid #4a4a4a;
+    }
+    .cart-table tbody tr {
+        background-color: #2c2c2c;
+    }
+    .cart-table img {
+        border-radius: 8px;
+    }
+
+    /* Form control nền tối */
+    .form-control-dark {
+        background-color: #1a1a1a;
+        color: white;
+        border: 1px solid #555;
+    }
+    .form-control-dark:focus {
+        background-color: #1a1a1a;
+        color: white;
+        border-color: #d9232d;
+        box-shadow: none;
+    }
+
+    /* Khu vực tổng kết */
+    .summary-card {
+        background-color: #2c2c2c;
+        border-radius: 15px;
+        padding: 1.5rem;
+    }
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #4a4a4a;
+    }
+    .summary-row:last-child {
+        border-bottom: none;
+    }
+    .grand-total {
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #20c997;
+    }
+
+    /* Nút bấm tùy chỉnh */
+    .btn-custom-red {
+        background-color: #d9232d; 
+        border-color: #d9232d; 
+        color: white;
+        padding: 12px 25px; 
+        font-weight: 500;
+    }
+    .btn-custom-red:hover {
+        background-color: #b01c24; 
+        border-color: #a51a21; 
+        color: white;
+    }
+
+    /* Giao diện giỏ hàng rỗng */
+    .empty-cart-container {
+        background-color: #2c2c2c;
+        border-radius: 15px;
+        padding: 4rem 2rem;
+        text-align: center;
+    }
+    
+    /* Alert message */
+    .alert-success {
+        background-color: #198754;
+        color: white;
+        border: none;
+    }
+
+</style>
+
+<div class="container my-5">
+ 
+
+   @if (TempData["Message"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert" id="orderSuccessAlert">
         @TempData["Message"]
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-
-    <style>
-        .fade-out {
-            opacity: 1;
-            transition: opacity 1s ease-out;
-        }
-
-        .fade-out.hidden {
-            opacity: 0;
-        }
-    </style>
-
     <script>
-        setTimeout(function () {
-            var alertBox = document.getElementById('orderSuccessAlert');
-            if (alertBox) {
-                alertBox.classList.add('fade-out');
-                alertBox.classList.add('hidden');
-                setTimeout(function () {
-                    alertBox.style.display = 'none';
-                }, 1000); // chờ hiệu ứng kết thúc
-            }
-        }, 1000); // sau 3 giây bắt đầu ẩn
+        document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(function () {
+                var alertBox = document.getElementById('orderSuccessAlert');
+                if (alertBox) {
+                    alertBox.style.opacity = '0';
+                    setTimeout(function () {
+                        alertBox.style.display = 'none';
+                    }, 500);
+                }
+            }, 1000);
+        });
     </script>
 }
 
-@if (!Model.CartItems.Any())
-{
-    <div class="alert alert-warning">Giỏ hàng đang rỗng.</div>
-    <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Tiếp tục mua sắm</a>
-}
-else
-{
-    <form asp-action="UpdateQuantity" method="post">
-        <table class="table table-bordered">
-            <thead>
-                <tr>
-                    <th>Hình ảnh</th>
-                    <th>Sản phẩm</th>
-                    <th>Giá</th>
-                    <th style="width: 15%;">Số lượng</th>
-                    <th>Tổng</th>
-                    <th>Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-                @for (int i = 0; i < Model.CartItems.Count; i++)
-                {
-                    var item = Model.CartItems[i];
-                    var price = item.Price ?? 0;
-                    var total = price * item.Quantity;
-
-                    <tr>
-                        <td><img src="@item.ImageUrl" alt="Ảnh" width="60" /></td>
-                        <td>@item.ProductName</td>
-                        <td>@price.ToString("N0") ₫</td>
-                        <td>
-                            <input type="number" name="Quantities" value="@item.Quantity" class="form-control" min="1" />
-                            <input type="hidden" name="ProductIds" value="@item.ProductId" />
-                        </td>
-                        <td>@total.ToString("N0") ₫</td>
-                        <td>
-                            <a asp-action="RemoveFromCart" asp-route-id="@item.ProductId"
-                               class="btn btn-danger btn-sm">Xóa</a>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
-        <div class="d-flex justify-content-start mb-4">
-             <button type="submit" class="btn btn-primary">Cập nhật giỏ hàng</button>
+    @if (Model == null || !Model.CartItems.Any())
+    {
+        <div class="empty-cart-container">
+            <i class="bi bi-cart-x" style="font-size: 4rem;"></i>
+            <h4 class="mt-3">Giỏ hàng đang rỗng</h4>
+            <p class="text-muted">Hãy thêm sản phẩm vào giỏ để tiếp tục nhé.</p>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-custom-red mt-3">Tiếp tục mua sắm</a>
         </div>
-    </form>
-
-    <hr />
-
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <h4>Áp dụng mã giảm giá</h4>
-            @if (string.IsNullOrEmpty(Model.AppliedVoucherCode))
-            {
-                <form asp-action="ApplyVoucher" method="post" class="d-flex">
-                    <input type="text" name="voucherCode" class="form-control me-2" placeholder="Nhập mã voucher"/>
-                    <button type="submit" class="btn btn-secondary">Áp dụng</button>
-                </form>
-            }
-            else
-            {
-                <div class="alert alert-success">
-                    Đã áp dụng mã: <strong>@Model.AppliedVoucherCode</strong>
-                    <a asp-action="RemoveVoucher" class="text-danger ms-3 fw-bold">[Xóa]</a>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-lg-8">
+                <div class="cart-table">
+                    <form asp-action="UpdateQuantity" method="post">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th colspan="2">Sản phẩm</th>
+                                    <th>Giá</th>
+                                    <th style="width: 15%;">Số lượng</th>
+                                    <th>Tổng</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @for (int i = 0; i < Model.CartItems.Count; i++)
+                                {
+                                    var item = Model.CartItems[i];
+                                    <tr>
+                                        <td><img src="@item.ImageUrl" alt="Ảnh" width="60" /></td>
+                                        <td>@item.ProductName</td>
+                                        <td>@item.Price?.ToString("N0") VNĐ</td>
+                                        <td>
+                                            <input type="number" name="Quantities" value="@item.Quantity" class="form-control form-control-dark text-center" min="1" />
+                                            <input type="hidden" name="ProductIds" value="@item.ProductId" />
+                                        </td>
+                                        <td>@(((item.Price ?? 0) * item.Quantity).ToString("N0")) VNĐ</td>
+                                        <td>
+                                            <a asp-action="RemoveFromCart" asp-route-id="@item.ProductId" class="btn btn-outline-danger btn-sm">Xóa</a>
+                                        </td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                        <div class="d-flex justify-content-end mt-3">
+                            <button type="submit" class="btn btn-outline-light">Cập nhật giỏ hàng</button>
+                        </div>
+                    </form>
                 </div>
-            }
-        </div>
-        <div class="col-md-6">
-            <h4>Tổng cộng thanh toán</h4>
-            <ul class="list-group">
-                <li class="list-group-item d-flex justify-content-between">
-                    <span>Tạm tính</span>
-                    <strong>@Model.SubTotal.ToString("N0") ₫</strong>
-                </li>
-                @if (Model.DiscountAmount > 0)
-                {
-                    <li class="list-group-item d-flex justify-content-between text-success">
-                        <span>Giảm giá</span>
-                        <strong>-@Model.DiscountAmount.ToString("N0") ₫</strong>
-                    </li>
-                }
-                <li class="list-group-item d-flex justify-content-between bg-light">
-                    <span class="fw-bold">Thành tiền</span>
-                    <strong class="fw-bold">@Model.GrandTotal.ToString("N0") ₫</strong>
-                </li>
-            </ul>
-            <div class="d-grid gap-2 mt-3">
-                 <a asp-controller="Order" asp-action="Checkout" class="btn btn-success">Tiến hành thanh toán</a>
-                 <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Tiếp tục mua sắm</a>
+            </div>
+
+            <div class="col-lg-4">
+                <div class="summary-card">
+                    <h4 class="mb-4">Tổng kết</h4>
+                    
+                    <div class="summary-row">
+                        <span>Tạm tính</span>
+                        <strong>@Model.SubTotal.ToString("N0") VNĐ</strong>
+                    </div>
+
+                    @if (Model.DiscountAmount > 0)
+                    {
+                        <div class="summary-row text-success">
+                            <span>Giảm giá</span>
+                            <strong>-@Model.DiscountAmount.ToString("N0") VNĐ</strong>
+                        </div>
+                    }
+
+                    <div class="summary-row">
+                        <span class="fw-bold">Thành tiền</span>
+                        <strong class="grand-total">@Model.GrandTotal.ToString("N0") VNĐ</strong>
+                    </div>
+
+                    <div class="mt-4">
+                        <h6>Mã giảm giá</h6>
+                        @if (string.IsNullOrEmpty(Model.AppliedVoucherCode))
+                        {
+                            <form asp-action="ApplyVoucher" method="post" class="d-flex">
+                                <input type="text" name="voucherCode" class="form-control form-control-dark me-2" placeholder="Nhập mã voucher"/>
+                                <button type="submit" class="btn btn-outline-light">Áp dụng</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <div class="alert alert-success d-flex justify-content-between align-items-center">
+                                <span>Đã áp dụng: <strong>@Model.AppliedVoucherCode</strong></span>
+                                <a asp-action="RemoveVoucher" class="btn-close btn-close-white"></a>
+                            </div>
+                        }
+                    </div>
+
+                    <div class="d-grid gap-2 mt-4">
+                        <a asp-controller="Order" asp-action="Checkout" class="btn btn-custom-red">Tiến hành thanh toán</a>
+                        <a asp-controller="Home" asp-action="Index" class="btn btn-outline-secondary">Tiếp tục mua sắm</a>
+                    </div>
+                </div>
             </div>
         </div>
-    </div>
-}
+    }
+</div>

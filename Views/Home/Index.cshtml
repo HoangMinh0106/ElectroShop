@@ -4,50 +4,169 @@
 <style>
     body {
         background-color: #1a1a1a;
+        color: #f8f9fa;
     }
 
-    label, h3 {
+    /* Nút màu đỏ tùy chỉnh */
+    .btn-custom-red {
+        background-color: #d9232d;
+        border-color: #d9232d;
         color: white;
+    }
+
+    .btn-custom-red:hover {
+        background-color: #b01c24;
+        border-color: #a51a21;
+        color: white;
+    }
+
+
+    #homeCarousel .carousel-item img {
+        height: 500px;
+        width: 100%;
+        object-fit: contain;
+        border-radius: 15px;
+        background-color: #1a1a1a;
+    }
+
+
+    .filter-bar {
+        background-color: #2c2c2c;
+        padding: 1.5rem;
+        border-radius: 15px;
+        margin-bottom: 2.5rem;
+    }
+
+    .filter-bar .form-control {
+        background-color: #3a3a3a;
+        color: white;
+        border: 1px solid #555;
+    }
+
+    .filter-bar .form-control::placeholder {
+        color: #aaa;
+    }
+
+    .filter-bar .form-control:focus {
+        background-color: #3a3a3a;
+        color: white;
+        border-color: #d9232d;
+        /* Đổi màu focus sang đỏ */
+        box-shadow: none;
+    }
+
+    /* Khu vực danh mục mới */
+    .category-section {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 15px;
+    }
+
+    .category-link {
+        text-align: center;
+        display: inline-block;
+        padding: 12px 30px;
+        background-color: #2c2c2c;
+        color: #f8f9fa;
+        border-radius: 50px;
+        text-decoration: none;
+        font-weight: 500;
+        transition: background-color .2s ease-in-out, transform .2s ease-in-out;
+    }
+
+    .category-link:hover {
+        background-color: #4a4a4a;
+        transform: translateY(-3px);
+        color: white;
+    }
+
+    /* Thẻ sản phẩm */
+    .product-card {
+        background-color: #2c2c2c;
+        border: none;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: transform .2s ease-in-out, box-shadow .2s ease-in-out;
+    }
+
+    .product-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .product-card .card-img-top {
+        height: 250px;
+        object-fit: cover;
+    }
+
+    .product-card .card-body {
+        padding: 1.25rem;
+    }
+
+    .product-card .card-title {
+        text-align: center;
+        color: #f8f9fa;
+        font-weight: 500;
+    }
+
+    .product-card .card-text {
+        color: #f8f9fa !important;
+        
+    }
+
+    .product-card .text-muted {
+        color: #f8f9fa !important; 
+        font-size: 0.9rem;
+        text-align: center;
+    }
+
+    .product-card .price {
+        text-align: center;
+        font-size: 1.25rem;
+        font-weight: bold;
+        color: #ffffff;
+    }
+
+    .product-card .action-buttons .btn {
+        width: 100%;
+        margin-bottom: 0.5rem;
+    }
+
+    /* Tiêu đề mục */
+    .section-title {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    /* Thông báo */
+    #orderSuccessAlert {
+        transition: opacity 0.5s ease-in-out;
     }
 </style>
 
-<!--Hiển thị thông báo thành công nếu có-->
 @if (TempData["Message"] != null)
 {
     <div class="alert alert-success alert-dismissible fade show" role="alert" id="orderSuccessAlert">
         @TempData["Message"]
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
-
-    <style>
-        .fade-out {
-            opacity: 1;
-            transition: opacity 1s ease-out;
-        }
-
-        .fade-out.hidden {
-            opacity: 0;
-        }
-    </style>
-
     <script>
-        setTimeout(function () {
-            var alertBox = document.getElementById('orderSuccessAlert');
-            if (alertBox) {
-                alertBox.classList.add('fade-out');
-                alertBox.classList.add('hidden');
-                setTimeout(function () {
-                    alertBox.style.display = 'none';
-                }, 1000); // chờ hiệu ứng kết thúc
-            }
-        }, 1000); // sau 3 giây bắt đầu ẩn
+        document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(function () {
+                var alertBox = document.getElementById('orderSuccessAlert');
+                if (alertBox) {
+                    alertBox.style.opacity = '0';
+                    setTimeout(function () {
+                        alertBox.style.display = 'none';
+                    }, 500);
+                }
+            }, 1000);
+        });
     </script>
 }
 
-
-
-
-<!-- Slider -->
 <div id="homeCarousel" class="carousel slide mb-5" data-bs-ride="carousel">
     <div class="carousel-inner">
         <div class="carousel-item active">
@@ -68,81 +187,62 @@
     </button>
 </div>
 
-<!-- Danh mục -->
 <div class="container mb-5">
-    <div class="row">
+    <h2 class="section-title">Khám Phá Danh Mục</h2>
+    <div class="category-section">
         @foreach (var item in ViewBag.Categories as List<WebBanHang.Models.Category>)
         {
-            <div class="col-md-3 col-sm-6 mb-4">
-                <a asp-controller="Home" asp-action="ProductsByCategory" asp-route-categoryId="@item.Id" style="text-decoration:none;">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-body text-center">
-                            <h5 class="card-title">@item.Name</h5>
-                            <p class="card-text text-muted">@item.Description</p>
-                        </div>
-                    </div>
-                </a>
-            </div>
+            <a asp-controller="Home" asp-action="ProductsByCategory" asp-route-categoryId="@item.Id" class="category-link">
+                @item.Name
+            </a>
         }
     </div>
 </div>
 
-<!-- Tìm kiếm sản phẩm -->
-<div class="container mb-4">
+
+<div class="container filter-bar">
     <form asp-controller="Home" asp-action="Index" method="get" class="row g-3 align-items-center">
-        <div class="col-auto">
-            <label for="searchTerm" class="col-form-label text-white">Tìm kiếm:</label>
+        <div class="col-md-5">
+            <input type="text" class="form-control" id="searchTerm" name="searchTerm"
+                placeholder="Nhập tên sản phẩm để tìm kiếm..." value="@ViewBag.SearchTerm" />
         </div>
-        <div class="col-auto">
-            <input type="text" class="form-control" id="searchTerm" name="searchTerm" placeholder="Nhập tên sản phẩm" value="@ViewBag.SearchTerm" />
-        </div>
-        <div class="col-auto">
-            <button type="submit" class="btn btn-primary">Tìm</button>
-        </div>
-    </form>
-</div>
-
-
-<!-- Bộ lọc giá -->
-<div class="container mb-4">
-    <form asp-controller="Home" asp-action="Index" method="get" class="row g-3 align-items-center">
-        <div class="col-auto">
-            <label for="minPrice" class="col-form-label">Giá từ:</label>
-        </div>
-        <div class="col-auto">
-            <input type="number" class="form-control" id="minPrice" name="minPrice" value="@ViewBag.MinPrice" />
-        </div>
-        <div class="col-auto">
-            <label for="maxPrice" class="col-form-label">đến:</label>
-        </div>
-        <div class="col-auto">
-            <input type="number" class="form-control" id="maxPrice" name="maxPrice" value="@ViewBag.MaxPrice" />
-        </div>
-        <div class="col-auto">
-            <button type="submit" class="btn btn-outline-light">Lọc giá</button>
-        </div>
-    </form>
-</div>
-
-<!-- Sản phẩm nổi bật -->
-<h3 class="text-white mb-4">Sản phẩm nổi bật </h3>
-<div class="row">
-    @foreach (var product in ViewBag.Products as List<WebBanHang.Models.Product>)
-    {
-        <div class="col-md-3 mb-4">
-            <div class="card h-100 shadow">
-                <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name"
-                    style="height: 200px; object-fit: cover;" />
-                <div class="card-body">
-                    <h5 class="card-title">@product.Name</h5>
-                    <p class="card-text text-muted">@product.Description</p>
-                    <p class="card-text text-danger fw-bold">@string.Format("{0:N0}₫", product.Price)</p>
-                    <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@product.Id"
-                        class="btn btn-success btn-sm">Thêm vào giỏ hàng</a>
-                    <a asp-controller="Home" asp-action="Details" asp-route-id="@product.Id"
-                        class="btn btn-outline-primary btn-sm mt-2">Xem chi tiết</a>
-                </div>
+        <div class="col-md-5">
+            <div class="row g-2 align-items-center">
+                <div class="col"><input type="number" class="form-control" name="minPrice" placeholder="Giá từ"
+                        value="@ViewBag.MinPrice" /></div>
+                <div class="col-auto text-white">-</div>
+                <div class="col"><input type="number" class="form-control" name="maxPrice" placeholder="đến"
+                        value="@ViewBag.MaxPrice" /></div>
             </div>
         </div>
-    }
+        <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-custom-red">Áp dụng</button>
+        </div>
+    </form>
+</div>
+
+
+<div class="container">
+    <h2 class="section-title">Sản Phẩm Nổi Bật</h2>
+    <div class="row">
+        @foreach (var product in ViewBag.Products as List<WebBanHang.Models.Product>)
+        {
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card product-card h-100">
+                    <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name" />
+                    <div class="card-body d-flex flex-column">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text text-muted small flex-grow-1">@product.Description</p>
+                        <p class="price mb-3">@string.Format("{0:N0} VNĐ", product.Price)</p>
+                        <div class="action-buttons mt-auto">
+                            <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@product.Id"
+                                class="btn btn-custom-red">Thêm vào giỏ</a>
+                            <a asp-controller="Home" asp-action="Details" asp-route-id="@product.Id"
+                                class="btn btn-outline-light">Xem chi tiết</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
 </div>

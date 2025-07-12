@@ -17,7 +17,14 @@ namespace WebBanHang.Models
         public string? Address { get; set; }
 
         public decimal TotalAmount => CartItems?.Sum(i => i.Price.GetValueOrDefault() * i.Quantity) ?? 0;
-         
+
+
+
         public string PaymentMethod { get; set; } // "COD" hoặc "VNPAY"
+
+
+        public decimal SubTotal { get; set; }
+        public decimal DiscountAmount { get; set; }
+        public decimal GrandTotal { get; set; }
     }
 }
