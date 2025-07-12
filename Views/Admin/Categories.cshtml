@@ -4,40 +4,119 @@
     ViewData["Title"] = "Quản lý danh mục sản phẩm";
 }
 
-<h2 class="mb-3">Quản lý danh mục sản phẩm</h2>
+<style>
+    body {
+        background-color: #1a1a1a;
+        color: #f8f9fa;
+    }
 
-<p><a class="btn btn-success mb-3" asp-action="CreateCategory">➕ Thêm danh mục</a></p>
-<p><a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">Quay lại</a></p>
+    .admin-container {
+        background-color: #2c2c2c;
+        padding: 2rem;
+        border-radius: 16px;
+    }
 
-<table class="table table-bordered table-hover">
-    <thead class="table-dark">
-        <tr>
-            <th>ID</th>
-            <th>Tên danh mục</th>
-            <th class="text-center">Hành động</th>
-        </tr>
-    </thead>
-    <tbody>
-        @if (Model != null && Model.Any())
-        {
-            foreach (var category in Model)
-            {
+    .admin-table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .admin-table-header h2 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .admin-table thead th {
+        color: #adb5bd;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 500;
+        text-align: left;
+        padding: 1rem;
+        border-bottom: 2px solid #4a4a4a;
+    }
+
+    .admin-table tbody tr {
+        border-bottom: 1px solid #4a4a4a;
+    }
+    
+    .admin-table tbody tr:last-of-type {
+        border-bottom: none;
+    }
+
+    .admin-table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+    
+    .admin-table .actions-cell {
+        text-align: right;
+    }
+    
+    .actions-cell .btn {
+        margin-left: 0.5rem;
+    }
+
+    /* Tùy chỉnh nút */
+    .btn-custom-red {
+        background-color: #d9232d; 
+        border-color: #d9232d; 
+        color: white;
+    }
+    .btn-custom-red:hover {
+        background-color: #b01c24; 
+        border-color: #a51a21; 
+    }
+</style>
+
+<div class="container my-5">
+    <div class="admin-container">
+        <div class="admin-table-header">
+            <h2>Quản lý danh mục</h2>
+            <div class="d-flex gap-2">
+                <a class="btn btn-custom-red" asp-action="CreateCategory">➕ Thêm danh mục</a>
+                <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
+            </div>
+        </div>
+
+        <table class="admin-table">
+            <thead>
                 <tr>
-                    <td>@category.Id</td>
-                    <td>@category.Name</td>
-                    <td class="text-center">
-                        <a class="btn btn-sm btn-primary" asp-action="EditCategory" asp-route-id="@category.Id">✏️ Sửa</a>
-                        <a class="btn btn-sm btn-danger" asp-action="DeleteCategory" asp-route-id="@category.Id"
-                           onclick="return confirm('Bạn có chắc muốn xóa danh mục này không?');">🗑️ Xóa</a>
-                    </td>
+                    <th>ID</th>
+                    <th>Tên danh mục</th>
+                    <th class="text-end">Hành động</th>
                 </tr>
-            }
-        }
-        else
-        {
-            <tr>
-                <td colspan="3" class="text-center text-muted">Không có danh mục nào.</td>
-            </tr>
-        }
-    </tbody>
-</table>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var category in Model)
+                    {
+                        <tr>
+                            <td>@category.Id</td>
+                            <td>@category.Name</td>
+                            <td class="actions-cell">
+                                <a class="btn btn-sm btn-outline-light" asp-action="EditCategory" asp-route-id="@category.Id">✏️ Sửa</a>
+                                <a class="btn btn-sm btn-outline-danger" asp-action="DeleteCategory" asp-route-id="@category.Id"
+                                   onclick="return confirm('Bạn có chắc muốn xóa danh mục này không?');">🗑️ Xóa</a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="3" class="text-center text-muted py-4">Không có danh mục nào.</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

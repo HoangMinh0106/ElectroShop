@@ -4,31 +4,131 @@
     ViewData["Title"] = "Đặt Hàng Thành Công";
 }
 
-<div class="container text-center mt-5">
-    @if (TempData["Message"] != null)
-    {
-        <div class="alert alert-success" role="alert">
-            @TempData["Message"]
-        </div>
+<style>
+    body {
+        background-color: #1a1a1a;
+        color: #f8f9fa;
     }
 
-    <div class="card">
-        <div class="card-header bg-success text-white">
-            <h3 class="mb-0">Đặt Hàng Thành Công! 🎉</h3>
+    .confirmation-container {
+        max-width: 700px;
+        margin: 4rem auto;
+        background-color: #2c2c2c;
+        padding: 3rem;
+        border-radius: 16px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .success-icon {
+        font-size: 5rem;
+        color: #198754;
+        /* Màu xanh lá cây thành công */
+    }
+
+    .confirmation-title {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-top: 1.5rem;
+    }
+
+    .confirmation-subtitle {
+        color: #adb5bd;
+        font-size: 1.1rem;
+    }
+
+    .order-details-grid {
+        display: grid;
+        grid-template-columns: auto 1fr;
+        gap: 1rem;
+        text-align: left;
+        margin-top: 2rem;
+        padding: 1.5rem;
+        background-color: #1a1a1a;
+        border-radius: 12px;
+    }
+
+    .order-details-grid .label {
+        font-weight: 500;
+        color: #adb5bd;
+    }
+
+    .order-details-grid .value {
+        font-weight: 600;
+        word-break: break-all;
+    }
+
+    .btn-custom-red {
+        background-color: #d9232d;
+        border-color: #d9232d;
+        color: white;
+        padding: 12px 30px;
+        font-weight: 500;
+        font-size: 1.1rem;
+        border-radius: 8px;
+        text-transform: uppercase;
+    }
+
+    .btn-custom-red:hover {
+        background-color: #b01c24;
+        border-color: #a51a21;
+        color: white;
+    }
+</style>
+
+<div class="container">
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="orderSuccessAlert">
+            @TempData["Message"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
-        <div class="card-body">
-            <h5 class="card-title">Cảm ơn bạn đã mua hàng!</h5>
-            <p class="card-text">Chi tiết đơn hàng của bạn:</p>
-            <ul class="list-group list-group-flush">
-                <li class="list-group-item"><strong>Mã đơn hàng:</strong> #@Model.Id</li>
-                <li class="list-group-item"><strong>Khách hàng:</strong> @Model.CustomerName</li>
-                <li class="list-group-item"><strong>Địa chỉ:</strong> @Model.Address</li>
-                <li class="list-group-item"><strong>Phương thức thanh toán:</strong> @Model.PaymentMethod</li>
-            </ul>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                setTimeout(function () {
+                    var alertBox = document.getElementById('orderSuccessAlert');
+                    if (alertBox) {
+                        alertBox.style.opacity = '0';
+                        setTimeout(function () {
+                            alertBox.style.display = 'none';
+                        }, 500);
+                    }
+                }, 1000);
+            });
+        </script>
+    }
+
+    <div class="confirmation-container">
+        <div class="success-icon">
+            <i class="bi bi-check-circle-fill"></i>
         </div>
-        <div class="card-footer text-muted">
-            <p>Chúng tôi sẽ liên hệ với bạn để xác nhận đơn hàng trong thời gian sớm nhất.</p>
-            <a asp-controller="Home" asp-action="Index" class="btn btn-primary">Về trang chủ</a>
+        <h2 class="confirmation-title">Đặt Hàng Thành Công!</h2>
+        <p class="confirmation-subtitle">Cảm ơn bạn đã tin tưởng và mua hàng. Chi tiết đơn hàng của bạn:</p>
+
+        <div class="order-details-grid mt-4">
+            <div class="label">Mã đơn hàng:</div>
+            <div class="value">#@Model.Id</div>
+
+            <div class="label">Khách hàng:</div>
+            <div class="value">@Model.CustomerName</div>
+
+            <div class="label">Địa chỉ:</div>
+            <div class="value">@Model.Address</div>
+
+            <div class="label">Điện thoại:</div>
+            <div class="value">@Model.Phone</div>
+
+            <div class="label">Tổng tiền:</div>
+            <div class="value text-success fw-bold">@Model.TotalAmount.ToString("N0") VNĐ</div>
+
+            <div class="label">Thanh toán:</div>
+            <div class="value">@Model.PaymentMethod</div>
         </div>
+
+        <p class="mt-4 text-muted">Chúng tôi sẽ liên hệ với bạn để xác nhận đơn hàng trong thời gian sớm nhất.</p>
+
+        <a asp-controller="Home" asp-action="Index" class="btn btn-custom-red mt-3">Về trang chủ</a>
     </div>
+
 </div>

@@ -1,34 +1,112 @@
 @model List<WebBanHang.Models.User>
 
-<h2>Quản lý người dùng</h2>
-<p><a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">Quay lại</a></p>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>ID</th>
-            <th>Tên đăng nhập</th>
-            <th>Giới tính</th>
-            <th>Điện thoại</th>
-            <th>Địa chỉ</th>
-            <th>Vai trò</th>
-            <th>Hành động</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var user in Model)
-        {
-            <tr>
-                <td>@user.Id</td>
-                <td>@user.Username</td>
-                <td>@user.Gender</td>
-                <td>@user.PhoneNumber</td>
-                <td>@user.Address</td>
-                <td>@user.Role</td>
-                <td>
-                    <a class="btn btn-danger btn-sm" asp-action="Delete" asp-route-id="@user.Id"
-                       onclick="return confirm('Xóa người dùng này?');">Xóa</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+@{
+    ViewData["Title"] = "Quản lý người dùng";
+}
+
+<style>
+    body {
+        background-color: #1a1a1a;
+        color: #f8f9fa;
+    }
+
+    .admin-container {
+        background-color: #2c2c2c;
+        padding: 2rem;
+        border-radius: 16px;
+    }
+
+    .admin-table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .admin-table-header h2 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .admin-table thead th {
+        color: #adb5bd;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 500;
+        text-align: left;
+        padding: 1rem;
+        border-bottom: 2px solid #4a4a4a;
+    }
+
+    .admin-table tbody tr {
+        border-bottom: 1px solid #4a4a4a;
+    }
+    
+    .admin-table tbody tr:last-of-type {
+        border-bottom: none;
+    }
+
+    .admin-table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+
+    /* Tùy chỉnh nút */
+    .btn-custom-red {
+        background-color: #d9232d; 
+        border-color: #d9232d; 
+        color: white;
+    }
+    .btn-custom-red:hover {
+        background-color: #b01c24; 
+        border-color: #a51a21; 
+    }
+</style>
+
+<div class="container my-5">
+    <div class="admin-container">
+        <div class="admin-table-header">
+            <h2>Quản lý người dùng</h2>
+            <div class="d-flex gap-2">
+                <a asp-controller="Admin" asp-action="CreateUser" class="btn btn-custom-red">Thêm người dùng mới</a>
+                <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
+            </div>
+        </div>
+
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Tên đăng nhập</th>
+                    <th>Giới tính</th>
+                    <th>Điện thoại</th>
+                    <th>Địa chỉ</th>
+                    <th>Vai trò</th>
+                    <th>Hành động</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr>
+                        <td>@user.Id</td>
+                        <td>@user.Username</td>
+                        <td>@user.Gender</td>
+                        <td>@user.PhoneNumber</td>
+                        <td>@user.Address</td>
+                        <td>@user.Role</td>
+                        <td>
+                            <a class="btn btn-outline-danger btn-sm" asp-action="DeleteUser" asp-route-id="@user.Id"
+                               onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?');">Xóa</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

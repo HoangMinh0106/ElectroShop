@@ -9,7 +9,7 @@
             <th>Người đặt</th>
             <th>Ngày đặt</th>
             <th>Tổng tiền</th>
-        </tr>
+            <th>Phương thức thanh toán</th> </tr>
     </thead>
     <tbody>
     @foreach (var order in Model)
@@ -19,7 +19,7 @@
             <td>@order.Username</td>
             <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
             <td>@order.TotalAmount.ToString("N0") VNĐ</td>
-        </tr>
+            <td>@order.PaymentMethod</td> </tr>
     }
     </tbody>
 </table>

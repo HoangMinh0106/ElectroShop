@@ -2,25 +2,100 @@
     ViewData["Title"] = "Trang quản trị Admin";
 }
 
-<h2>Trang quản trị Admin</h2>
-<p>Chào mừng, Admin!</p>
+<style>
+    body {
+        background-color: #1a1a1a;
+        color: #f8f9fa;
+    }
 
-<a class="nav-link text-dark" asp-controller="Admin" asp-action="AdminUser">
-    Quản lý Người dùng
-</a>
+    .admin-header {
+        margin-bottom: 2rem;
+    }
 
-<a class="nav-link text-dark" asp-controller="Admin" asp-action="Categories">
-    Quản lý Danh mục
-</a>
-<a class="nav-link text-dark" asp-controller="Admin" asp-action="Products">
-    Quản lý Sản phẩm
-</a>
-<a class="nav-link text-dark" asp-controller="Admin" asp-action="ManageOrders">
-    Quản lý Đơn hàng
-</a>
-<a class="nav-link text-dark" asp-controller="Admin" asp-action="Revenue">
-    Quản lý Doanh thu
-</a>
-<a class="nav-link text-dark" asp-controller="Admin" asp-action="Vouchers">
-    Quản lý Voucher
-</a>
+    .admin-header h2 {
+        font-weight: 600;
+    }
+
+    .admin-header .text-muted {
+        color: #ffffff !important;
+        font-size: 1.1rem;
+    }
+
+    .dashboard-grid {
+        display: grid;
+        /* Tạo lưới tự động co giãn, mỗi mục có chiều rộng tối thiểu 250px */
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        /* Khoảng cách giữa các thẻ */
+    }
+
+    .dashboard-card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: #2c2c2c;
+        color: #f8f9fa;
+        text-decoration: none;
+        padding: 2rem;
+        border-radius: 16px;
+        transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+        border: 1px solid #444;
+    }
+
+    .dashboard-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+        color: white;
+    }
+
+    .dashboard-card i {
+        font-size: 2.5rem;
+        /* Kích thước icon */
+        margin-bottom: 1rem;
+        color: #d9232d;
+        /* Màu đỏ chủ đạo cho icon */
+    }
+
+    .dashboard-card-title {
+        font-size: 1.1rem;
+        font-weight: 500;
+    }
+</style>
+
+<div class="container my-5">
+    <div class="admin-header">
+        <h2>Trang quản trị Admin</h2>
+        <p class="text-muted">Chào mừng trở lại, Admin!</p>
+    </div>
+
+    <div class="dashboard-grid">
+        <a class="dashboard-card" asp-controller="Admin" asp-action="AdminUser">
+            <i class="bi bi-people-fill"></i>
+            <span class="dashboard-card-title">Quản lý Người dùng</span>
+        </a>
+
+        <a class="dashboard-card" asp-controller="Admin" asp-action="Categories">
+            <i class="bi bi-tags-fill"></i>
+            <span class="dashboard-card-title">Quản lý Danh mục</span>
+        </a>
+
+        <a class="dashboard-card" asp-controller="Admin" asp-action="Products">
+            <i class="bi bi-box-seam-fill"></i>
+            <span class="dashboard-card-title">Quản lý Sản phẩm</span>
+        </a>
+
+        <a class="dashboard-card" asp-controller="Admin" asp-action="ManageOrders">
+            <i class="bi bi-receipt"></i>
+            <span class="dashboard-card-title">Quản lý Đơn hàng</span>
+        </a>
+
+        <a class="dashboard-card" asp-controller="Admin" asp-action="Revenue">
+            <i class="bi bi-graph-up-arrow"></i>
+            <span class="dashboard-card-title">Quản lý Doanh thu</span>
+        </a>
+
+        <a class="dashboard-card" asp-controller="Admin" asp-action="Vouchers"> <i class="bi bi-award-fill"></i> <span
+                class="dashboard-card-title">Quản lý Voucher</span> </a>
+    </div>
+</div>
