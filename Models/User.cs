@@ -25,7 +25,7 @@ namespace WebBanHang.Models
         [Required]
         public string? Role { get; set; } = "User"; 
         
-        // Sửa lại dòng này để khởi tạo một danh sách rỗng
+        [Required]
         public ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }
