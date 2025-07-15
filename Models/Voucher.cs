@@ -14,7 +14,7 @@ namespace WebBanHang.Models
         public int Id { get; set; }
 
         [Required]
-        public string Code { get; set; } // Mã voucher, ví dụ: "SALE50"
+        public string Code { get; set; } 
 
         public DiscountType DiscountType { get; set; } // Loại giảm giá
 

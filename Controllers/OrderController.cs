@@ -28,7 +28,7 @@ namespace WebBanHang.Controllers
             _vnPayService = vnPayService;
         }
 
-        // GET: /Order/Checkout 
+
         public IActionResult Checkout()
         {
             var cartItems = HttpContext.Session.GetObjectFromJson<List<CartItem>>(CartSession) ?? new List<CartItem>();
@@ -83,7 +83,7 @@ namespace WebBanHang.Controllers
             return View(model);
         }
 
-        // POST: /Order/Checkout 
+    
         [HttpPost]
         public IActionResult Checkout(CheckoutViewModel model)
         {
@@ -227,7 +227,7 @@ namespace WebBanHang.Controllers
             return RedirectToAction("PaymentFail");
         }
         
-        // Action hiển thị trang xác nhận
+
         public IActionResult OrderConfirmation(int id)
         {
             var order = _context.Orders.Include(o => o.OrderItems)
@@ -237,7 +237,7 @@ namespace WebBanHang.Controllers
             return View(order);
         }
 
-        // Action hiển thị trang thất bại
+
         public IActionResult PaymentFail()
         {
             return View();

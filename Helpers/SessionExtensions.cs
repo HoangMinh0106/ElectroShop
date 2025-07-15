@@ -1,7 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 
-namespace WebBanHang.Helpers // hoặc namespace phù hợp với project bạn
+namespace WebBanHang.Helpers 
 {
     public static class SessionExtensions
     {

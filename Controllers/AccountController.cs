@@ -15,13 +15,13 @@ namespace WebBanHang.Controllers
             _context = context;
         }
 
-        // GET: /Account/Register
+
         public IActionResult Register()
         {
             return View();
         }
 
-        // POST: /Account/Register
+
         [HttpPost]
         public IActionResult Register(User user)
         {
@@ -37,13 +37,13 @@ namespace WebBanHang.Controllers
             return View(user);
         }
 
-        // GET: /Account/Login
+
         public IActionResult Login()
         {
             return View();
         }
 
-        // POST: /Account/Login
+
         [HttpPost]
         public IActionResult Login(string username, string password)
         {
@@ -65,14 +65,14 @@ namespace WebBanHang.Controllers
             return View();
         }
 
-        // GET: /Account/Logout
+
         public IActionResult Logout()
         {
             HttpContext.Session.Clear();
             return RedirectToAction("Login");
         }
 
-        // GET: /Account/AccessDenied
+
         public IActionResult AccessDenied()
         {
             return View();

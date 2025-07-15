@@ -9,7 +9,7 @@ namespace WebBanHang.Models
         public string Phone { get; set; }
         public string Address { get; set; }
         public List<OrderItem> OrderItems { get; set; }
-        public int User { get; set; } // Tôi giữ lại thuộc tính này theo yêu cầu của bạn
+        public int User { get; set; } 
         public string PaymentMethod { get; set; }
         public string PaymentStatus { get; set; }
         public string? TransactionId { get; set; }

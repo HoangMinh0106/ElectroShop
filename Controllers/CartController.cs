@@ -20,7 +20,7 @@ namespace WebBanHang.Controllers
             _context = context;
         }
 
-        // SỬA ĐỔI: Action Index() được cập nhật để sử dụng CartViewModel
+
         public IActionResult Index()
         {
             var cartItems = HttpContext.Session.GetObjectFromJson<List<CartItem>>(CartSession) ?? new List<CartItem>();
@@ -60,7 +60,7 @@ namespace WebBanHang.Controllers
             return View(viewModel);
         }
 
-        // GIỮ NGUYÊN: Các phương thức gốc của bạn
+
         public IActionResult AddToCart(int id)
         {
             var product = _context.Products.FirstOrDefault(p => p.Id == id);
@@ -140,7 +140,6 @@ namespace WebBanHang.Controllers
             return RedirectToAction("Index");
         }
 
-        // THÊM MỚI: Các action xử lý Voucher
         [HttpPost]
         public IActionResult ApplyVoucher(string voucherCode)
         {

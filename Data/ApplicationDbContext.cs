@@ -23,7 +23,7 @@ namespace WebBanHang.Data
         {
             base.OnModelCreating(modelBuilder);
 
-            // Cấu hình kiểu dữ liệu
+ 
             modelBuilder.Entity<Product>().Property(p => p.Price).HasColumnType("decimal(18,2)");
             modelBuilder.Entity<Order>().Property(o => o.TotalAmount).HasColumnType("decimal(18,2)");
             modelBuilder.Entity<Order>().Property(o => o.Discount).HasColumnType("decimal(18,2)");
@@ -42,7 +42,7 @@ namespace WebBanHang.Data
                 new Category { Id = 8, Name = "Phụ kiện" }
             );
 
-            // Dữ liệu mẫu cho Product
+
             modelBuilder.Entity<Product>().HasData(
                 new Product { Id = 1, Name = "Laptop Lenovo IdeaPad", Description = "i5-13420H/512GB/24GB", Price = 15000000m, ImageUrl = "/Image/laptop1.png", CategoryId = 1 },
                 new Product { Id = 2, Name = "Laptop Avita PURA", Description = "i5-1235U/512GB/14GB", Price = 16000000m, ImageUrl = "/Image/laptop2.png", CategoryId = 1 },

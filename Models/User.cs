@@ -19,9 +19,9 @@ namespace WebBanHang.Models
         public string? Address { get; set; } = null!;
 
         [Required]
-        public string? PhoneNumber { get; set; } = null!; // 🔧 thêm dòng này
+        public string? PhoneNumber { get; set; } = null!; 
 
         [Required]
-        public string? Role { get; set; } = "User"; // 🔧 thêm dòng này
+        public string? Role { get; set; } = "User"; 
     }
 }
