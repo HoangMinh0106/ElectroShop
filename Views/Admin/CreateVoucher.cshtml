@@ -2,50 +2,128 @@
 
 @{
     ViewData["Title"] = "Tạo Voucher mới";
-
 }
 
-<h1>Tạo Voucher mới</h1>
-<hr />
-<div class="row">
-    <div class="col-md-6">
-        <form asp-action="CreateVoucher">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+<style>
+    body {
+        background-color: #1a1a1a;
+        color: #f8f9fa;
+    }
+    .admin-container {
+        background-color: #2c2c2c;
+        padding: 2rem;
+        border-radius: 16px;
+    }
+    .admin-form-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    .admin-form-header h2 {
+        margin: 0;
+        font-weight: 600;
+    }
+    .form-control-dark, .form-select-dark {
+        background-color: #3a3a3a;
+        color: white;
+        border: 1px solid #555;
+    }
+    .form-control-dark:focus, .form-select-dark:focus {
+        background-color: #3a3a3a;
+        color: white;
+        border-color: #d9232d;
+        box-shadow: none;
+    }
+    
+    /* Custom Toggle Switch */
+    .form-switch .form-check-input {
+        background-color: #555;
+        border-color: #6c757d;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%236c757d'/%3e%3c/svg%3e");
+    }
+    .form-switch .form-check-input:focus {
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23d9232d'/%3e%3c/svg%3e");
+    }
+    .form-switch .form-check-input:checked {
+        background-color: #d9232d;
+        border-color: #d9232d;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='-4 -4 8 8'%3e%3ccircle r='3' fill='%23fff'/%3e%3c/svg%3e");
+    }
+
+    .btn-custom-red {
+        background-color: #d9232d; border-color: #d9232d; color: white;
+    }
+    .btn-custom-red:hover {
+        background-color: #b01c24; border-color: #a51a21; 
+    }
+</style>
+
+<div class="container my-5">
+    <div class="admin-container">
+        <div class="admin-form-header">
+            <h2>@ViewData["Title"]</h2>
+            <a asp-action="Vouchers" class="btn btn-outline-secondary">Quay lại danh sách</a>
+        </div>
+        
+        <hr class="my-3" style="border-color: #4a4a4a;" />
+
+        <form asp-action="CreateVoucher" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
             
-            <div class="form-group mb-3">
-                <label asp-for="Code" class="control-label"></label>
-                <input asp-for="Code" class="form-control" />
-                <span asp-validation-for="Code" class="text-danger"></span>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="Code" class="form-label"></label>
+                        <input asp-for="Code" class="form-control form-control-dark" />
+                        <span asp-validation-for="Code" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="DiscountType" class="form-label">Loại giảm giá</label>
+                        <select asp-for="DiscountType" asp-items="Html.GetEnumSelectList<WebBanHang.Models.DiscountType>()" class="form-select form-select-dark"></select>
+                        <span asp-validation-for="DiscountType" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="DiscountValue" class="form-label">Giá trị giảm</label>
+                        <input asp-for="DiscountValue" class="form-control form-control-dark" />
+                        <span asp-validation-for="DiscountValue" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label asp-for="MinAmount" class="form-label">Giá trị đơn hàng tối thiểu</label>
+                        <input asp-for="MinAmount" class="form-control form-control-dark" />
+                        <span asp-validation-for="MinAmount" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ExpiryDate" class="form-label">Ngày hết hạn</label>
+                        <input asp-for="ExpiryDate" type="date" class="form-control form-control-dark" />
+                        <span asp-validation-for="ExpiryDate" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="form-group pt-3">
+                        <div class="form-check form-switch">
+                             <input class="form-check-input" type="checkbox" role="switch" id="isActiveSwitch" asp-for="IsActive">
+                             <label class="form-check-label" for="isActiveSwitch">Kích hoạt</label>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="form-group mb-3">
-                <label asp-for="DiscountType" class="control-label">Loại giảm giá</label>
-                <select asp-for="DiscountType" asp-items="Html.GetEnumSelectList<WebBanHang.Models.DiscountType>()" class="form-control"></select>
-                <span asp-validation-for="DiscountType" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="DiscountValue" class="control-label">Giá trị giảm</label>
-                <input asp-for="DiscountValue" class="form-control" />
-                <span asp-validation-for="DiscountValue" class="text-danger"></span>
-            </div>
-             <div class="form-group mb-3">
-                <label asp-for="MinAmount" class="control-label">Giá trị đơn hàng tối thiểu</label>
-                <input asp-for="MinAmount" class="form-control" />
-                <span asp-validation-for="MinAmount" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="ExpiryDate" class="control-label">Ngày hết hạn</label>
-                <input asp-for="ExpiryDate" type="date" class="form-control" />
-                <span asp-validation-for="ExpiryDate" class="text-danger"></span>
-            </div>
-            <div class="form-group form-check mb-3">
-                <label class="form-check-label">
-                    <input class="form-check-input" asp-for="IsActive" /> Kích hoạt
-                </label>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Tạo mới" class="btn btn-primary" />
-                <a asp-action="Vouchers" class="btn btn-secondary">Quay lại danh sách</a>
+
+            <hr class="my-4" style="border-color: #4a4a4a;"/>
+
+            <div class="d-flex justify-content-end gap-2">
+                <a asp-action="Vouchers" class="btn btn-outline-secondary">Hủy</a>
+                <input type="submit" value="Tạo mới" class="btn btn-custom-red" />
             </div>
         </form>
     </div>
 </div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

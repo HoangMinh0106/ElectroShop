@@ -1,106 +1,281 @@
 @model IEnumerable<dynamic>
 @{
     ViewData["Title"] = "Thống kê doanh thu";
+    var revenueByDay = ViewBag.RevenueByDay as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+    var revenueByMonth = ViewBag.RevenueByMonth as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+    var revenueByYear = ViewBag.RevenueByYear as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
 }
 
-<h2>Doanh thu chi tiết</h2>
-<table class="table table-bordered">
-    <thead>
-        <tr>
-            <th>Mã đơn</th>
-            <th>Ngày</th>
-            <th>Tổng tiền</th>
-        </tr>
-    </thead>
-    <tbody>
-    @if (Model != null && Model.Count() > 0)
-    {
-        foreach (var o in Model)
-        {
-            <tr>
-                <td>@o.Id</td>
-                <td>@Convert.ToDateTime(o.OrderDate)</td>
-                <td>@String.Format("{0:N0} VNĐ", o.TotalAmount)</td>
-            </tr>
-        }
+<style>
+    body {
+        background-color: #1a1a1a;
+        color: #f8f9fa;
     }
-    else
-    {
-        <tr><td colspan="3">Không có dữ liệu.</td></tr>
-    }
-    </tbody>
-</table>
 
-<hr />
+    .admin-container {
+        background-color: #2c2c2c;
+        padding: 2rem;
+        border-radius: 16px;
+        margin-bottom: 5rem;
+    }
 
-<h3>Thống kê theo ngày</h3>
-<table class="table table-bordered">
-    <thead>
-        <tr><th>Ngày</th><th>Doanh thu</th></tr>
-    </thead>
-    <tbody>
-    @if (ViewBag.RevenueByDay != null)
-    {
-        foreach (var item in ViewBag.RevenueByDay)
-        {
-            <tr>
-                <td>@item.Date</td> <!-- đã format sẵn trong controller -->
-                <td>@string.Format("{0:N0} VNĐ", (decimal)item.Total)</td>
-            </tr>
-        }
+    .admin-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
     }
-    else
-    {
-        <tr><td colspan="2">Không có dữ liệu theo ngày.</td></tr>
-    }
-    </tbody>
-</table>
 
-<h3>Thống kê theo tháng</h3>
-<table class="table table-bordered">
-    <thead>
-        <tr><th>Tháng</th><th>Doanh thu</th></tr>
-    </thead>
-    <tbody>
-    @if (ViewBag.RevenueByMonth != null)
-    {
-        foreach (var item in ViewBag.RevenueByMonth)
-        {
-            <tr>
-                <td>@item.Month</td> <!-- VD: 07/2025 -->
-                <td>@string.Format("{0:N0} VNĐ", (decimal)item.Total)</td>
-            </tr>
-        }
+    .admin-header h2 {
+        margin: 0;
+        font-weight: 600;
     }
-    else
-    {
-        <tr><td colspan="2">Không có dữ liệu theo tháng.</td></tr>
-    }
-    </tbody>
-</table>
 
-<h3>Thống kê theo năm</h3>
-<table class="table table-bordered">
-    <thead>
-        <tr><th>Năm</th><th>Doanh thu</th></tr>
-    </thead>
-    <tbody>
-    @if (ViewBag.RevenueByYear != null)
-    {
-        foreach (var item in ViewBag.RevenueByYear)
-        {
-            <tr>
-                <td>@item.Year</td>
-                <td>@string.Format("{0:N0} VNĐ", (decimal)item.Total)</td>
-            </tr>
-        }
+    /* KPI Cards */
+    .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+        gap: 1rem;
+        margin-bottom: 2rem;
     }
-    else
-    {
-        <tr><td colspan="2">Không có dữ liệu theo năm.</td></tr>
+    .kpi-card {
+        background-color: #3a3a3a;
+        padding: 1.25rem;
+        border-radius: 12px;
     }
-    </tbody>
-</table>
+    .kpi-card .kpi-title {
+        color: #adb5bd;
+        font-size: 0.85rem;
+        text-transform: uppercase;
+    }
+    .kpi-card .kpi-value {
+        font-size: 1.75rem;
+        font-weight: 600;
+        margin-top: 0.5rem;
+    }
+    .kpi-card .kpi-icon {
+        font-size: 1.5rem;
+        color: #d9232d;
+    }
 
-<p><strong>Tổng doanh thu:</strong> @((ViewBag.TotalRevenue ?? 0M).ToString("N0")) VNĐ</p>
-<a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">Quay lại</a>
+    /* Custom Tabs */
+    .nav-tabs {
+        border-bottom: 2px solid #4a4a4a;
+    }
+    .nav-tabs .nav-link {
+        background-color: transparent;
+        border: none;
+        color: #adb5bd;
+        font-weight: 500;
+    }
+    .nav-tabs .nav-link.active {
+        background-color: #3a3a3a;
+        color: #fff;
+        border-bottom: 2px solid #d9232d;
+    }
+    .nav-tabs .nav-link:hover {
+        border-color: transparent;
+        color: #fff;
+    }
+    .tab-content {
+        background-color: #3a3a3a;
+        padding: 1.5rem;
+        border-radius: 0 0 12px 12px;
+    }
+
+    /* Admin Table */
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .admin-table thead th {
+        color: #adb5bd;
+        font-weight: 500;
+        text-align: left;
+        padding: 0.75rem;
+        border-bottom: 2px solid #555;
+    }
+    .admin-table tbody tr {
+        border-bottom: 1px solid #555;
+    }
+    .admin-table tbody tr:last-of-type { border-bottom: none; }
+    .admin-table tbody td {
+        padding: 0.75rem;
+        vertical-align: middle;
+    }
+</style>
+
+<div class="container-fluid my-5">
+    <div class="admin-container">
+        <div class="admin-header">
+            <h2>Bảng điều khiển Doanh thu</h2>
+            <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
+        </div>
+
+        <div class="kpi-grid">
+            <div class="kpi-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="kpi-title">Tổng doanh thu</div>
+                        <div class="kpi-value">@((ViewBag.TotalRevenue ?? 0M).ToString("N0")) ₫</div>
+                    </div>
+                    <i class="bi bi-cash-stack kpi-icon"></i>
+                </div>
+            </div>
+        </div>
+        
+        <div>
+            <ul class="nav nav-tabs" id="revenueTab" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="daily-tab" data-bs-toggle="tab" data-bs-target="#daily-tab-pane" type="button" role="tab">Doanh thu theo ngày</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="monthly-tab" data-bs-toggle="tab" data-bs-target="#monthly-tab-pane" type="button" role="tab">Theo tháng</button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="yearly-tab" data-bs-toggle="tab" data-bs-target="#yearly-tab-pane" type="button" role="tab">Theo năm</button>
+                </li>
+                 <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="details-tab" data-bs-toggle="tab" data-bs-target="#details-tab-pane" type="button" role="tab">Doanh thu chi tiết</button>
+                </li>
+            </ul>
+
+            <div class="tab-content" id="revenueTabContent">
+                <div class="tab-pane fade show active" id="daily-tab-pane" role="tabpanel">
+                    <div style="height: 400px;">
+                         <canvas id="dailyRevenueChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="monthly-tab-pane" role="tabpanel">
+                    <div style="height: 400px;">
+                         <canvas id="monthlyRevenueChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="yearly-tab-pane" role="tabpanel">
+                     <div style="height: 400px;">
+                         <canvas id="yearlyRevenueChart"></canvas>
+                    </div>
+                </div>
+
+                <div class="tab-pane fade" id="details-tab-pane" role="tabpanel">
+                     <div style="max-height: 400px; overflow-y: auto;">
+                        <table class="admin-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã đơn</th>
+                                    <th>Ngày</th>
+                                    <th>Tổng tiền</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                            @if (Model != null && Model.Any())
+                            {
+                                foreach (var o in Model)
+                                {
+                                    <tr>
+                                        <td>#@o.Id</td>
+                                        <td>@Convert.ToDateTime(o.OrderDate).ToString("dd/MM/yyyy HH:mm")</td>
+                                        <td>@String.Format("{0:N0} VNĐ", o.TotalAmount)</td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr><td colspan="3" class="text-center">Không có dữ liệu.</td></tr>
+                            }
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Lấy dữ liệu từ ViewBag
+        const dailyDataRaw = @Html.Raw(Json.Serialize(revenueByDay.Select(r => new { Date = r.Date, Total = (decimal)r.Total })));
+        const monthlyDataRaw = @Html.Raw(Json.Serialize(revenueByMonth.Select(r => new { Month = r.Month, Total = (decimal)r.Total })));
+        const yearlyDataRaw = @Html.Raw(Json.Serialize(revenueByYear.Select(r => new { Year = r.Year, Total = (decimal)r.Total })));
+
+        // Cấu hình chung cho các biểu đồ
+        const chartOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: { color: '#adb5bd', callback: (value) => new Intl.NumberFormat('vi-VN').format(value) + ' ₫' },
+                    grid: { color: 'rgba(255, 255, 255, 0.1)' }
+                },
+                x: {
+                    ticks: { color: '#adb5bd' },
+                    grid: { display: false }
+                }
+            },
+            plugins: {
+                legend: { display: false },
+                tooltip: {
+                     callbacks: {
+                        label: function(context) {
+                            let label = 'Doanh thu: ';
+                            if (context.parsed.y !== null) {
+                                label += new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(context.parsed.y);
+                            }
+                            return label;
+                        }
+                    }
+                }
+            }
+        };
+
+        // Hàm tạo dataset chung
+        const createDataset = (data) => [{
+            label: 'Doanh thu (VNĐ)',
+            data: data,
+            backgroundColor: 'rgba(217, 35, 45, 0.6)',
+            borderColor: 'rgba(217, 35, 45, 1)',
+            borderWidth: 1,
+            borderRadius: 5
+        }];
+
+        // Vẽ biểu đồ theo ngày
+        const dailyCtx = document.getElementById('dailyRevenueChart').getContext('2d');
+        new Chart(dailyCtx, {
+            type: 'bar',
+            data: {
+                labels: dailyDataRaw.map(item => item.date),
+                datasets: createDataset(dailyDataRaw.map(item => item.total))
+            },
+            options: chartOptions
+        });
+        
+        // Vẽ biểu đồ theo tháng
+        const monthlyCtx = document.getElementById('monthlyRevenueChart').getContext('2d');
+        new Chart(monthlyCtx, {
+            type: 'bar',
+            data: {
+                labels: monthlyDataRaw.map(item => item.month),
+                datasets: createDataset(monthlyDataRaw.map(item => item.total))
+            },
+            options: chartOptions
+        });
+
+        // Vẽ biểu đồ theo năm
+        const yearlyCtx = document.getElementById('yearlyRevenueChart').getContext('2d');
+        new Chart(yearlyCtx, {
+            type: 'bar',
+            data: {
+                labels: yearlyDataRaw.map(item => item.year.toString()),
+                datasets: createDataset(yearlyDataRaw.map(item => item.total))
+            },
+            options: chartOptions
+        });
+    });
+    </script>
+}

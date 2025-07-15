@@ -9,8 +9,11 @@ namespace WebBanHang.Models
 
         public List<CartViewModel> CartItems { get; set; } = new List<CartViewModel>();
 
-        // THÊM CÁC THUỘC TÍNH CÒN THIẾU VÀO ĐÂY
+
         public string PaymentMethod { get; set; }
         public string PaymentStatus { get; set; }
+
+      
+
     }
 }

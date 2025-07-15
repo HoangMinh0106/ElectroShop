@@ -1,25 +1,92 @@
 @model List<WebBanHang.Models.OrderViewModel>
 
-<h2>Quản lý đơn hàng</h2>
-<p><a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">Quay lại</a></p>
-<table class="table">
-    <thead>
-        <tr>
-            <th>Mã đơn</th>
-            <th>Người đặt</th>
-            <th>Ngày đặt</th>
-            <th>Tổng tiền</th>
-            <th>Phương thức thanh toán</th> </tr>
-    </thead>
-    <tbody>
-    @foreach (var order in Model)
-    {
-        <tr>
-            <td>@order.OrderId</td>
-            <td>@order.Username</td>
-            <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
-            <td>@order.TotalAmount.ToString("N0") VNĐ</td>
-            <td>@order.PaymentMethod</td> </tr>
+@{
+    ViewData["Title"] = "Quản lý đơn hàng";
+}
+
+<style>
+    body {
+        background-color: #1a1a1a;
+        color: #f8f9fa;
     }
-    </tbody>
-</table>
+
+    .admin-container {
+        background-color: #2c2c2c;
+        padding: 2rem;
+        border-radius: 16px;
+    }
+
+    .admin-table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .admin-table-header h2 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+
+    .admin-table thead th {
+        color: #adb5bd;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 500;
+        text-align: left;
+        padding: 1rem;
+        border-bottom: 2px solid #4a4a4a;
+    }
+
+    .admin-table tbody tr {
+        border-bottom: 1px solid #4a4a4a;
+    }
+    
+    .admin-table tbody tr:last-of-type {
+        border-bottom: none;
+    }
+
+    .admin-table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+
+</style>
+
+<div class="container my-5">
+    <div class="admin-container">
+        <div class="admin-table-header">
+            <h2>Quản lý đơn hàng</h2>
+            <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
+        </div>
+
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th>Mã đơn</th>
+                    <th>Người đặt</th>
+                    <th>Ngày đặt</th>
+                    <th>Tổng tiền</th>
+                    <th>Phương thức thanh toán</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var order in Model)
+                {
+                    <tr>
+                        <td>@order.OrderId</td>
+                        <td>@order.Username</td>
+                        <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
+                        <td>@order.TotalAmount.ToString("N0") VNĐ</td>
+                        <td>@order.PaymentMethod</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

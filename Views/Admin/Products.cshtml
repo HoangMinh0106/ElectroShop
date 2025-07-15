@@ -5,46 +5,146 @@
     var categories = ViewBag.Categories as List<WebBanHang.Models.Category>;
 }
 
-<h2 class="mb-4">Danh sách sản phẩm</h2>
+<style>
+    body {
+        background-color: #1a1a1a;
+        color: #f8f9fa;
+    }
 
-<a class="btn btn-success mb-3" href="/Admin/CreateProduct">+ Thêm sản phẩm mới</a>
-<p><a asp-controller="Admin" asp-action="Index" class="btn btn-secondary">Quay lại</a></p>
-<table class="table table-bordered table-striped">
-    <thead>
-        <tr>
-            <th>Tên sản phẩm</th>
-            <th>Mô tả</th>
-            <th>Giá</th>
-            <th>Ảnh</th>
-            <th>Danh mục</th>
-            <th>Thao tác</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var product in Model)
-        {
-            <tr>
-                <td>@product.Name</td>
-                <td>@product.Description</td>
-                <td>@String.Format("{0:N0} ₫", product.Price)</td>
-                <td>
-                    @if (!string.IsNullOrEmpty(product.ImageUrl))
-                    {
-                        <img src="@product.ImageUrl" alt="Ảnh" width="80" />
-                    }
-                </td>
-                <td>
-                    @{
-                        var category = categories?.FirstOrDefault(c => c.Id == product.CategoryId)?.Name ?? "Không có";
-                        @category
-                    }
-                </td>
-                <td>
-                    <a class="btn btn-primary btn-sm" href="/Admin/EditProduct/@product.Id">Sửa</a>
-                    <a class="btn btn-danger btn-sm" href="/Admin/DeleteProduct/@product.Id" 
-                       onclick="return confirm('Bạn có chắc muốn xoá sản phẩm này?')">Xoá</a>
-                </td>
-            </tr>
-        }
-    </tbody>
-</table>
+    .admin-container {
+        background-color: #2c2c2c;
+        padding: 2rem;
+        border-radius: 16px;
+    }
+
+    .admin-table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .admin-table-header h2 {
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+        table-layout: fixed; /* Giúp kiểm soát độ rộng cột tốt hơn */
+    }
+
+    .admin-table thead th {
+        color: #adb5bd;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 500;
+        text-align: left;
+        padding: 1rem;
+        border-bottom: 2px solid #4a4a4a;
+    }
+
+    .admin-table tbody tr {
+        border-bottom: 1px solid #4a4a4a;
+    }
+    
+    .admin-table tbody tr:last-of-type {
+        border-bottom: none;
+    }
+
+    .admin-table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+    
+    .admin-table .actions-cell {
+        text-align: right;
+    }
+    
+    .actions-cell .btn {
+        margin-left: 0.5rem;
+    }
+
+    /* Rút gọn văn bản dài */
+    .truncate-text {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 250px; /* Điều chỉnh độ rộng tối đa cho cột mô tả */
+    }
+    
+    .table-img {
+        width: 80px;
+        height: 80px;
+        object-fit: cover;
+        border-radius: 8px;
+    }
+
+    /* Tùy chỉnh nút */
+    .btn-custom-red {
+        background-color: #d9232d; 
+        border-color: #d9232d; 
+        color: white;
+    }
+    .btn-custom-red:hover {
+        background-color: #b01c24; 
+        border-color: #a51a21; 
+    }
+</style>
+
+<div class="container my-5">
+    <div class="admin-container">
+        <div class="admin-table-header">
+            <h2>Quản lý sản phẩm</h2>
+            <div class="d-flex gap-2">
+                <a class="btn btn-custom-red" href="/Admin/CreateProduct">+ Thêm sản phẩm mới</a>
+                <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
+            </div>
+        </div>
+
+        <table class="admin-table">
+            <thead>
+                <tr>
+                    <th style="width: 20%;">Tên sản phẩm</th>
+                    <th style="width: 30%;">Mô tả</th>
+                    <th style="width: 10%;">Giá</th>
+                    <th style="width: 10%;">Ảnh</th>
+                    <th style="width: 15%;">Danh mục</th>
+                    <th style="width: 15%;" class="text-end">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var product in Model)
+                {
+                    <tr>
+                        <td>@product.Name</td>
+                        <td>
+                            <div class="truncate-text" title="@product.Description">
+                                @product.Description
+                            </div>
+                        </td>
+                        <td>@String.Format("{0:N0} ₫", product.Price)</td>
+                        <td>
+                            @if (!string.IsNullOrEmpty(product.ImageUrl))
+                            {
+                                <img src="@product.ImageUrl" alt="Ảnh sản phẩm" class="table-img" />
+                            }
+                        </td>
+                        <td>
+                            @{
+                                var category = categories?.FirstOrDefault(c => c.Id == product.CategoryId)?.Name ?? "Không có";
+                                @category
+                            }
+                        </td>
+                        <td class="actions-cell">
+                            <a class="btn btn-primary btn-sm" href="/Admin/EditProduct/@product.Id">Sửa</a>
+                            <a class="btn btn-danger btn-sm" href="/Admin/DeleteProduct/@product.Id" 
+                               onclick="return confirm('Bạn có chắc muốn xoá sản phẩm này?')">Xoá</a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

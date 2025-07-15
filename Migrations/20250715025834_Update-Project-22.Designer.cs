@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebBanHang.Data;
 
@@ -11,9 +12,11 @@ using WebBanHang.Data;
 namespace DoAnWebNC.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250715025834_Update-Project-22")]
+    partial class UpdateProject22
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -218,6 +221,15 @@ namespace DoAnWebNC.Migrations
                         },
                         new
                         {
+                            Id = 3,
+                            CategoryId = 1,
+                            Description = "i5-13500H/512GB/16GB",
+                            ImageUrl = "/Image/laptop3.png",
+                            Name = "Laptop ASUS ExpertBook",
+                            Price = 17000000m
+                        },
+                        new
+                        {
                             Id = 4,
                             CategoryId = 1,
                             Description = "i5-13500H/512GB/16GB",
@@ -227,12 +239,39 @@ namespace DoAnWebNC.Migrations
                         },
                         new
                         {
+                            Id = 5,
+                            CategoryId = 1,
+                            Description = "i5-12500H/512GB/16GB",
+                            ImageUrl = "/Image/laptop5.png",
+                            Name = "Laptop ASUS Vivobook",
+                            Price = 18000000m
+                        },
+                        new
+                        {
+                            Id = 6,
+                            CategoryId = 1,
+                            Description = "i3-1305U/512GB/8GB",
+                            ImageUrl = "/Image/laptop6.png",
+                            Name = "Laptop Dell Inspiron",
+                            Price = 16500000m
+                        },
+                        new
+                        {
                             Id = 7,
                             CategoryId = 1,
                             Description = "i5-13420H/512GB/8GB",
                             ImageUrl = "/Image/laptop7.png",
                             Name = "Laptop Dell XPS",
                             Price = 19000000m
+                        },
+                        new
+                        {
+                            Id = 8,
+                            CategoryId = 1,
+                            Description = "Ultra-7-155H/512GB/16GB",
+                            ImageUrl = "/Image/laptop8.png",
+                            Name = "Laptop LG Gram",
+                            Price = 17500000m
                         },
                         new
                         {

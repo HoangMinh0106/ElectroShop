@@ -31,7 +31,6 @@ namespace WebBanHang.Data
             modelBuilder.Entity<Voucher>().Property(v => v.DiscountValue).HasColumnType("decimal(18,2)");
             modelBuilder.Entity<Voucher>().Property(v => v.MinAmount).HasColumnType("decimal(18,2)");
 
-            // Dữ liệu mẫu cho Category
             modelBuilder.Entity<Category>().HasData(
                 new Category { Id = 1, Name = "Laptop" },
                 new Category { Id = 2, Name = "Laptop Gaming" },
@@ -47,12 +46,8 @@ namespace WebBanHang.Data
             modelBuilder.Entity<Product>().HasData(
                 new Product { Id = 1, Name = "Laptop Lenovo IdeaPad", Description = "i5-13420H/512GB/24GB", Price = 15000000m, ImageUrl = "/Image/laptop1.png", CategoryId = 1 },
                 new Product { Id = 2, Name = "Laptop Avita PURA", Description = "i5-1235U/512GB/14GB", Price = 16000000m, ImageUrl = "/Image/laptop2.png", CategoryId = 1 },
-                new Product { Id = 3, Name = "Laptop ASUS ExpertBook", Description = "i5-13500H/512GB/16GB", Price = 17000000m, ImageUrl = "/Image/laptop3.png", CategoryId = 1 },
                 new Product { Id = 4, Name = "Laptop Lenovo ThinkBook", Description = "i5-13500H/512GB/16GB", Price = 15500000m, ImageUrl = "/Image/laptop4.png", CategoryId = 1 },
-                new Product { Id = 5, Name = "Laptop ASUS Vivobook", Description = "i5-12500H/512GB/16GB", Price = 18000000m, ImageUrl = "/Image/laptop5.png", CategoryId = 1 },
-                new Product { Id = 6, Name = "Laptop Dell Inspiron", Description = "i3-1305U/512GB/8GB", Price = 16500000m, ImageUrl = "/Image/laptop6.png", CategoryId = 1 },
                 new Product { Id = 7, Name = "Laptop Dell XPS", Description = "i5-13420H/512GB/8GB", Price = 19000000m, ImageUrl = "/Image/laptop7.png", CategoryId = 1 },
-                new Product { Id = 8, Name = "Laptop LG Gram", Description = "Ultra-7-155H/512GB/16GB", Price = 17500000m, ImageUrl = "/Image/laptop8.png", CategoryId = 1 },
                 new Product { Id = 9, Name = "Laptop MSI Prestige", Description = "Ultra-5-125H/512GB/16GB", Price = 20000000m, ImageUrl = "/Image/laptop9.png", CategoryId = 1 },
                 new Product { Id = 10, Name = "Laptop Lenovo Yoga", Description = "Ultra-7-258V/512GB/1TB", Price = 21000000m, ImageUrl = "/Image/laptop10.png", CategoryId = 1 },
                 new Product { Id = 11, Name = "Laptop Gaming 1", Description = "Laptop gaming cấu hình khủng 1", Price = 22000000m, ImageUrl = "/images/gaming1.jpg", CategoryId = 2 },
@@ -87,7 +82,6 @@ namespace WebBanHang.Data
                 new Product { Id = 40, Name = "Bàn phím 10", Description = "Bàn phím cơ học 10", Price = 1000000m, ImageUrl = "/images/keyboard10.jpg", CategoryId = 4 }
             );
 
-            // Dữ liệu mẫu cho Voucher
             modelBuilder.Entity<Voucher>().HasData(
                 new Voucher
                 {

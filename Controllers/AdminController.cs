@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 namespace WebBanHang.Controllers
 {
+    //LINQ (Language-Integrated Query) là một công nghệ của Microsoft tích hợp khả năng truy vấn dữ liệu trực tiếp vào trong ngôn ngữ lập trình C#.
     public class AdminController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -20,21 +21,23 @@ namespace WebBanHang.Controllers
             _context = context;
         }
 
-        // === TRANG CHÍNH ADMIN ===
+
         public IActionResult Index()
         {
+            // Kiểm tra xem người dùng đã đăng nhập với vai trò "Admin" trong Session hay chưa.
             if (HttpContext.Session.GetString("Role") != "Admin")
                 return RedirectToAction("AccessDenied", "Account");
-
+            // Nếu đã đăng nhập với vai trò "Admin", trả về trang chính của Admin.
             return View("~/Views/Admin/Index.cshtml");
         }
 
-        // === QUẢN LÝ NGƯỜI DÙNG ===
+
         public IActionResult AdminUser()
         {
             if (HttpContext.Session.GetString("Role") != "Admin")
                 return RedirectToAction("AccessDenied", "Account");
-
+            // Lấy danh sách người dùng từ cơ sở dữ liệu.
+            // Sử dụng _context để truy vấn dữ liệu từ bảng Users.
             var users = _context.Users.ToList();
             return View("~/Views/Admin/AdminUser.cshtml", users);
         }
@@ -49,6 +52,7 @@ namespace WebBanHang.Controllers
             {
                 if (user.Role == "Admin")
                 {
+                    // Thêm một lớp bảo vệ: không cho phép xóa tài khoản có vai trò "Admin".
                     TempData["Error"] = "Không thể xóa tài khoản Admin.";
                     return RedirectToAction("AdminUser");
                 }
@@ -58,7 +62,6 @@ namespace WebBanHang.Controllers
             return RedirectToAction("AdminUser");
         }
 
-        // === QUẢN LÝ DANH MỤC ===
         public IActionResult Categories()
         {
             if (HttpContext.Session.GetString("Role") != "Admin")
@@ -128,7 +131,7 @@ namespace WebBanHang.Controllers
             return RedirectToAction("Categories");
         }
 
-        // === QUẢN LÝ SẢN PHẨM ===
+
         public IActionResult Products()
         {
             if (HttpContext.Session.GetString("Role") != "Admin")
@@ -221,17 +224,17 @@ namespace WebBanHang.Controllers
             return RedirectToAction("Products");
         }
 
-        // === THỐNG KÊ DOANH THU ===
+
         public IActionResult Revenue()
         {
             if (HttpContext.Session.GetString("Role") != "Admin")
                 return RedirectToAction("AccessDenied", "Account");
-
+            // Lấy các đơn hàng đã thanh toán hoặc COD.
             var orders = _context.Orders
                 .Where(o => o.PaymentStatus == "Paid" || o.PaymentStatus == "COD")
                 .OrderByDescending(o => o.OrderDate)
                 .ToList();
-
+            // Dùng LINQ để tính toán và nhóm dữ liệu ( cả tháng cả năm )
             ViewBag.TotalRevenue = orders.Sum(o => o.TotalAmount);
             ViewBag.RevenueByDay = orders.GroupBy(o => o.OrderDate.Date).Select(g => new { Date = g.Key, Total = g.Sum(x => x.TotalAmount) }).OrderBy(g => g.Date).ToList();
             ViewBag.RevenueByMonth = orders.GroupBy(o => new { o.OrderDate.Year, o.OrderDate.Month }).Select(g => new { Month = new DateTime(g.Key.Year, g.Key.Month, 1), Total = g.Sum(x => x.TotalAmount) }).OrderBy(g => g.Month).ToList();
@@ -240,25 +243,25 @@ namespace WebBanHang.Controllers
             return View("~/Views/Admin/Revenue.cshtml", orders);
         }
 
-        // === QUẢN LÝ ĐƠN HÀNG ===
+
         public IActionResult ManageOrders()
         {
             if (HttpContext.Session.GetString("Role") != "Admin")
                 return RedirectToAction("AccessDenied", "Account");
-
+            // Dùng LINQ Join để kết nối bảng Orders và Users, lấy username.
             var ordersWithUsers = _context.Orders
                 .Join(
-                    _context.Users,         // Bảng để join
-                    order => order.UserId,  // Khóa từ bảng Orders
-                    user => user.Id,        // Khóa từ bảng Users
-                    (order, user) => new OrderViewModel // Tạo đối tượng mới từ kết quả
+                    _context.Users,
+                    order => order.UserId,
+                    user => user.Id,
+                    (order, user) => new OrderViewModel
                     {
                         OrderId = order.Id,
                         Username = user.Username, // Lấy username từ đối tượng user đã join
                         OrderDate = order.OrderDate,
                         TotalAmount = order.TotalAmount,
                         PaymentMethod = order.PaymentMethod,
-                        PaymentStatus = order.PaymentStatus
+                        PaymentStatus = order.PaymentStatus,
                     })
                 .OrderByDescending(o => o.OrderDate)
                 .ToList();
