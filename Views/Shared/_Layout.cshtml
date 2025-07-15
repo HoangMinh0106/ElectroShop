@@ -40,28 +40,48 @@
                     </ul>
 
                     <ul class="navbar-nav ms-auto align-items-center">
-                         <li class="nav-item position-relative">
+                        <li class="nav-item position-relative">
                             <a class="nav-link text-dark" asp-controller="Cart" asp-action="Index">
                                 🛒 Giỏ hàng
                                 @if (totalQuantity > 0)
                                 {
-                                    <span class="position-absolute top-10 start-90 translate-middle badge rounded-pill bg-danger">
+                                    <span
+                                        class="position-absolute top-10 start-90 translate-middle badge rounded-pill bg-danger">
                                         @totalQuantity
                                     </span>
                                 }
                             </a>
                         </li>
 
-
                         @if (HttpContextAccessor.HttpContext.Session.GetString("Username") != null)
                         {
-                            <li class="nav-item">
-                                <span class="nav-link text-dark">
+                            <li class="nav-item dropdown">
+                                <a class="nav-link text-dark dropdown-toggle" href="#" id="userDropdown" role="button"
+                                    data-bs-toggle="dropdown" aria-expanded="false">
                                     Xin chào, @HttpContextAccessor.HttpContext.Session.GetString("Username")
-                                </span>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link text-dark" asp-controller="Account" asp-action="Logout">Đăng xuất</a>
+                                </a>
+                                <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="Profile">Hồ sơ</a>
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="MyOrders">Đơn hàng của
+                                            tôi</a>
+                                    </li>
+                                    @if (HttpContextAccessor.HttpContext.Session.GetString("Role") == "Admin")
+                                    {
+                                        <li>
+                                            <a class="dropdown-item" asp-controller="Admin" asp-action="Index">Trang quản
+                                                trị</a>
+                                        </li>
+                                    }
+                                    <li>
+                                        <hr class="dropdown-divider">
+                                    </li>
+                                    <li>
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="Logout">Đăng xuất</a>
+                                    </li>
+                                </ul>
                             </li>
                         }
                         else

@@ -1,0 +1,90 @@
+@model WebBanHang.Models.User
+
+@{
+    ViewData["Title"] = "Hồ sơ của bạn";
+}
+
+<style>
+
+    body {
+        background-color: #1a1a1a;
+        color: #f8f9fa;
+    }
+
+    .profile-container {
+        max-width: 800px;
+        margin: 2rem auto;
+        background-color: #2c2c2c;
+        padding: 2rem;
+        border-radius: 16px;
+    }
+
+    .form-control-dark {
+        background-color: #3a3a3a;
+        color: white;
+        border: 1px solid #555;
+    }
+
+    .form-control-dark:focus {
+        background-color: #3a3a3a;
+        color: white;
+        border-color: #d9232d;
+        box-shadow: none;
+    }
+
+    .btn-custom-red {
+        background-color: #d9232d;
+        border-color: #d9232d;
+        color: white;
+    }
+</style>
+
+<div class="profile-container">
+    <h2 class="mb-4">Hồ sơ cá nhân</h2>
+
+    @if (TempData["Message"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert" id="orderSuccessAlert">
+            @TempData["Message"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                setTimeout(function () {
+                    var alertBox = document.getElementById('orderSuccessAlert');
+                    if (alertBox) {
+                        alertBox.style.opacity = '0';
+                        setTimeout(function () {
+                            alertBox.style.display = 'none';
+                        }, 500);
+                    }
+                }, 1000);
+            });
+        </script>
+    }
+
+    <form asp-action="Profile" method="post">
+        <input type="hidden" asp-for="Id" />
+        <input type="hidden" asp-for="Password" />
+        <input type="hidden" asp-for="Role" />
+
+        <div class="mb-3">
+            <label class="form-label">Tên đăng nhập</label>
+            <input asp-for="Username" class="form-control form-control-dark" readonly />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Gender" class="form-label">Giới tính</label>
+            <input asp-for="Gender" class="form-control form-control-dark" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="PhoneNumber" class="form-label">Số điện thoại</label>
+            <input asp-for="PhoneNumber" class="form-control form-control-dark" />
+        </div>
+        <div class="mb-3">
+            <label asp-for="Address" class="form-label">Địa chỉ</label>
+            <textarea asp-for="Address" class="form-control form-control-dark" rows="3"></textarea>
+        </div>
+
+        <button type="submit" class="btn btn-custom-red">Cập nhật thông tin</button>
+    </form>
+</div>

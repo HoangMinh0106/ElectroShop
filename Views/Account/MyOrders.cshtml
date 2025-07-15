@@ -1,0 +1,114 @@
+@model List<WebBanHang.Models.Order>
+
+@{
+    ViewData["Title"] = "Đơn hàng của tôi";
+}
+
+<style>
+    body {
+        background-color: #1a1a1a;
+        color: #f8f9fa;
+    }
+    .order-history-container {
+        max-width: 900px;
+        margin: 2rem auto;
+        background-color: #2c2c2c;
+        padding: 2rem;
+        border-radius: 16px;
+    }
+    .table-dark-custom { 
+        width: 100%; 
+        border-collapse: collapse; 
+    }
+    .table-dark-custom thead th {
+        color: #adb5bd; 
+        text-transform: uppercase; 
+        font-weight: 500;
+        font-size: 0.9rem;
+        text-align: left; 
+        padding: 1rem; 
+        border-bottom: 2px solid #4a4a4a;
+    }
+    .table-dark-custom tbody tr { 
+        border-bottom: 1px solid #4a4a4a; 
+    }
+    .table-dark-custom tbody tr:last-of-type { 
+        border-bottom: none; 
+    }
+    .table-dark-custom tbody td { 
+        padding: 1rem; 
+        vertical-align: middle; 
+    }
+    .status-badge {
+        padding: 0.3rem 0.7rem;
+        border-radius: 20px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+    .status-paid, .status-completed { 
+        background-color: #198754; 
+        color: #fff; 
+    }
+    .status-pending { 
+        background-color: #ffc107; 
+        color: #000; 
+    }
+    .status-cod { 
+        background-color: #6c757d; 
+        color: #fff; 
+    }
+    .status-failed, .status-cancelled { 
+        background-color: #dc3545; 
+        color: #fff; 
+    }
+</style>
+
+<div class="order-history-container">
+    <h2 class="mb-4">Lịch sử đơn hàng</h2>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="table-responsive">
+            <table class="table-dark-custom">
+                <thead>
+                    <tr>
+                        <th>Mã đơn</th>
+                        <th>Ngày đặt</th>
+                        <th>Tổng tiền</th>
+                        <th>Thanh toán</th>
+                        <th>Trạng thái</th>
+                        <th></th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var order in Model)
+                    {
+                        <tr>
+                            <td>#@order.Id</td>
+                            <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
+                            <td>@order.TotalAmount.ToString("N0") ₫</td>
+                            <td>@order.PaymentMethod</td>
+                            <td>
+                                <span class="status-badge status-@(order.PaymentStatus?.ToLower() ?? "pending")">
+                                    @order.PaymentStatus
+                                </span>
+                            </td>
+                            <td class="text-end">
+                                <a asp-controller="Order" asp-action="OrderConfirmation" asp-route-id="@order.Id" class="btn btn-sm btn-outline-light">Xem chi tiết</a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-box2" style="font-size: 4rem; color: #555;"></i>
+            <p class="mt-3">Bạn chưa có đơn hàng nào.</p>
+            <a asp-controller="Home" asp-action="Index" class="btn btn-danger mt-2">Bắt đầu mua sắm</a>
+        </div>
+    }
+</div>

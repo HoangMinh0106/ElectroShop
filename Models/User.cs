@@ -19,9 +19,12 @@ namespace WebBanHang.Models
         public string? Address { get; set; } = null!;
 
         [Required]
-        public string? PhoneNumber { get; set; } = null!; 
+        public string? PhoneNumber { get; set; } = null!;
 
         [Required]
         public string? Role { get; set; } = "User"; 
+        
+        
+        public ICollection<Order> Orders { get; set; }
     }
 }
