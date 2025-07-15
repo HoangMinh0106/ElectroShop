@@ -1,3 +1,4 @@
+using System.Collections.Generic; // Đảm bảo bạn đã có using này
 using System.ComponentModel.DataAnnotations;
 
 namespace WebBanHang.Models
@@ -24,7 +25,7 @@ namespace WebBanHang.Models
         [Required]
         public string? Role { get; set; } = "User"; 
         
-        
-        public ICollection<Order> Orders { get; set; }
+        // Sửa lại dòng này để khởi tạo một danh sách rỗng
+        public ICollection<Order> Orders { get; set; } = new List<Order>();
     }
 }

@@ -77,8 +77,7 @@ namespace WebBanHang.Controllers
         {
             return View();
         }
-
-
+        // GET: /Account/Profile
         public IActionResult Profile()
         {
             // Lấy username từ session
@@ -102,7 +101,7 @@ namespace WebBanHang.Controllers
             return View(user);
         }
 
-
+        // POST: /Account/Profile
         [HttpPost]
         public IActionResult Profile(User updatedUser)
         {
@@ -128,31 +127,29 @@ namespace WebBanHang.Controllers
 
             return RedirectToAction("Profile");
         }
-
-
+        // GET: /Account/MyOrders
         public IActionResult MyOrders()
         {
+            // Lấy username từ session
             var username = HttpContext.Session.GetString("Username");
             if (string.IsNullOrEmpty(username))
             {
                 return RedirectToAction("Login");
             }
 
-            // Tìm ID của người dùng
+            // Tìm user và lấy kèm tất cả các đơn hàng của họ
             var user = _context.Users.FirstOrDefault(u => u.Username == username);
             if (user == null)
             {
-                return NotFound("Không tìm thấy người dùng.");
+                return NotFound();
             }
 
-            // truy vấn trực tiếp trên bảng order
-            // Lọc ra các đơn hàng có UserId khớp với Id của người dùng đang đăng nhập
+            // Lọc ra các đơn hàng có UserId khớp với Id của người dùng
             var userOrders = _context.Orders
                                      .Where(order => order.UserId == user.Id)
                                      .OrderByDescending(o => o.OrderDate)
                                      .ToList();
 
-            // Trả về View với danh sách đơn hàng đã lọc
             return View(userOrders);
         }
     }
