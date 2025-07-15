@@ -53,8 +53,7 @@ namespace WebBanHang.Controllers
                 // Lưu thông tin đăng nhập vào Session
                 HttpContext.Session.SetString("Username", user.Username);
                 HttpContext.Session.SetString("Role", user.Role);
-
-                // Điều hướng dựa vào vai trò
+                // Chuyển hướng dựa trên vai trò
                 if (user.Role == "Admin")
                     return RedirectToAction("Index", "Admin");
                 else
@@ -77,7 +76,7 @@ namespace WebBanHang.Controllers
         {
             return View();
         }
-        // GET: /Account/Profile
+    
         public IActionResult Profile()
         {
             // Lấy username từ session
@@ -97,11 +96,11 @@ namespace WebBanHang.Controllers
                 return RedirectToAction("Login");
             }
 
-            // Trả về View với thông tin của người dùng
+         
             return View(user);
         }
 
-        // POST: /Account/Profile
+  
         [HttpPost]
         public IActionResult Profile(User updatedUser)
         {
@@ -127,7 +126,7 @@ namespace WebBanHang.Controllers
 
             return RedirectToAction("Profile");
         }
-        // GET: /Account/MyOrders
+
         public IActionResult MyOrders()
         {
             // Lấy username từ session

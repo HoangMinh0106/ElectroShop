@@ -1,4 +1,4 @@
-using System.Collections.Generic; // Đảm bảo bạn đã có using này
+using System.Collections.Generic; 
 using System.ComponentModel.DataAnnotations;
 
 namespace WebBanHang.Models
