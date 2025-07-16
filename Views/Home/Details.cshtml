@@ -1,7 +1,8 @@
 @model WebBanHang.Models.Product
-
 @{
-    ViewData["Title"] = "Chi tiết sản phẩm";
+    ViewData["Title"] = Model.Name;
+    var averageRating = ViewBag.AverageRating ?? 0.0;
+    var reviewCount = ViewBag.ReviewCount ?? 0;
 }
 
 <style>
@@ -12,16 +13,15 @@
 
     .product-detail-card {
         background-color: #2c2c2c;
-        border-radius: 15px;
+        border-radius: 16px;
         padding: 2.5rem;
         margin-top: 2rem;
-        margin-bottom: 2rem;
     }
 
     .product-image {
         border-radius: 10px;
         box-shadow: 0 5px 20px rgba(0, 0, 0, 0.25);
-        max-height: 700px;
+        max-height: 500px;
         object-fit: cover;
         width: 100%;
     }
@@ -32,70 +32,211 @@
     }
 
     .product-price {
-        color: #ffffff;
-        /* Màu xanh bạc hà nổi bật */
+        color: #f8f9fa;
         font-size: 2.25rem;
-        /* Tăng kích thước giá tiền */
         font-weight: bold;
     }
 
     .product-description {
         color: #adb5bd;
-        /* Màu chữ mô tả nhẹ nhàng hơn */
         font-size: 1.1rem;
         line-height: 1.6;
     }
 
     .btn-custom-red {
-        background-color: #d9232d;
-        border-color: #d9232d;
-        color: white;
-        padding: 12px 25px;
-        /* Tăng kích thước nút */
-        font-weight: 500;
+        background-color: #d9232d; border-color: #d9232d; color: white;
+        padding: 12px 25px; font-weight: 500;
     }
-
     .btn-custom-red:hover {
-        background-color: #b01c24;
-        border-color: #a51a21;
-        color: white;
-    }
-
-    .btn-back {
-        padding: 12px 25px;
-        font-weight: 500;
+        background-color: #b01c24; border-color: #a51a21;
     }
 
     hr.style-light {
-        border-top: 1px solid #444;
-        /* Đường kẻ ngang mờ */
+        border-top: 1px solid #4a4a4a;
+    }
+
+    /* CSS cho khu vực đánh giá */
+    .rating-summary .stars { color: #ffc107; font-size: 1.2rem; }
+    .review-card { background-color: #3a3a3a; padding: 1.5rem; border-radius: 12px; margin-bottom: 1rem; border: 1px solid #4a4a4a;}
+    .review-header { display: flex; justify-content: space-between; align-items: center; }
+    .review-user { font-weight: 600; }
+    .review-date { font-size: 0.85rem; color: #888; }
+    .review-body { margin-top: 1rem; }
+    
+    /* CSS cho form chọn sao */
+    .rating-form { display: inline-block; border: none; }
+    .rating-form > input { display: none; }
+    .rating-form > label {
+        float: right;
+        cursor: pointer;
+        color: #555;
+        font-size: 1.8rem;
+        transition: color 0.2s;
+    }
+    .rating-form > label:before { content: '★'; }
+    .rating-form > input:checked ~ label,
+    .rating-form:not(:checked) > label:hover,
+    .rating-form:not(:checked) > label:hover ~ label { color: #ffc107; }
+    
+    .form-control-dark {
+        background-color: #1a1a1a; color: white; border: 1px solid #555;
+    }
+    .form-control-dark:focus {
+        background-color: #1a1a1a; color: white; border-color: #d9232d; box-shadow: none;
     }
 </style>
 
-<div class="container">
+<div class="container my-4">
     <div class="product-detail-card">
         <div class="row align-items-center">
-            <div class="col-md-6">
+            <div class="col-lg-6">
                 <img src="@Model.ImageUrl" class="product-image" alt="@Model.Name">
             </div>
 
-            <div class="col-md-6">
-                <h2 class="product-title mb-3">@Model.Name</h2>
-                <p class="product-price mb-4">@string.Format("{0:N0} đ", Model.Price)</p>
+            <div class="col-lg-6">
+                <h2 class="product-title mb-2">@Model.Name</h2>
+                
+                <div class="rating-summary mb-3 d-flex align-items-center">
+                    @for (int i = 1; i <= 5; i++)
+                    {
+                        <span class="stars">@(i <= averageRating ? "★" : "☆")</span>
+                    }
+                    <span class="ms-2 text-muted">(@reviewCount đánh giá)</span>
+                </div>
 
+                <p class="product-price mb-4">@string.Format("{0:N0} đ", Model.Price)</p>
                 <h5 class="mt-4">Mô tả sản phẩm</h5>
                 <p class="product-description">@Model.Description</p>
-
                 <hr class="my-4 style-light">
-
                 <div class="d-flex align-items-center">
-                    <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@Model.Id"
-                        class="btn btn-custom-red me-3">
+                    <a asp-controller="Cart" asp-action="AddToCart" asp-route-id="@Model.Id" class="btn btn-custom-red me-3">
                         <i class="bi bi-cart-plus-fill"></i> Thêm vào giỏ hàng
                     </a>
-                    <a asp-action="Index" asp-controller="Home" class="btn btn-outline-light btn-back">Quay về</a>
                 </div>
             </div>
         </div>
     </div>
+
+    <div class="product-detail-card mt-4" id="reviews-section">
+        <h3 class="mb-4">Đánh giá sản phẩm</h3>
+
+        @if (Context.Session.GetString("Username") != null)
+        {
+            <div class="mb-4">
+                <h5>Viết đánh giá của bạn</h5>
+                <form id="reviewForm" asp-action="AddReview" asp-controller="Home" method="post">
+                    <input type="hidden" name="ProductId" id="productId" value="@Model.Id" />
+                    <div class="mb-3">
+                        <label class="form-label">Xếp hạng của bạn</label><br/>
+                        <div class="rating-form">
+                            <input type="radio" id="star5" name="Rating" value="5" required/><label for="star5"></label>
+                            <input type="radio" id="star4" name="Rating" value="4" /><label for="star4"></label>
+                            <input type="radio" id="star3" name="Rating" value="3" /><label for="star3"></label>
+                            <input type="radio" id="star2" name="Rating" value="2" /><label for="star2"></label>
+                            <input type="radio" id="star1" name="Rating" value="1" /><label for="star1"></label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Bình luận</label>
+                        <textarea name="Comment" id="comment" class="form-control form-control-dark" rows="3" required></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-custom-red">Gửi đánh giá</button>
+                </form>
+            </div>
+            <hr class="my-4 style-light"/>
+        }
+
+        <div id="reviewList">
+            @if (Model.Reviews == null || !Model.Reviews.Any())
+            {
+                <p id="no-reviews-message">Chưa có đánh giá nào cho sản phẩm này. Hãy là người đầu tiên!</p>
+            }
+            else
+            {
+                @foreach (var review in Model.Reviews.OrderByDescending(r => r.ReviewDate))
+                {
+                    <div class="review-card">
+                        <div class="review-header">
+                            <div class="review-user"><i class="bi bi-person-circle me-2"></i>@review.User.Username</div>
+                            <div class="review-date">@review.ReviewDate.ToString("dd/MM/yyyy")</div>
+                        </div>
+                        <div class="rating-summary mt-2">
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <span class="stars">@(i <= review.Rating ? "★" : "☆")</span>
+                            }
+                        </div>
+                        <div class="review-body">
+                            @review.Comment
+                        </div>
+                    </div>
+                }
+            }
+        </div>
+    </div>
 </div>
+
+@section Scripts {
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const reviewForm = document.getElementById('reviewForm');
+        if(reviewForm) {
+            reviewForm.addEventListener('submit', function (e) {
+                e.preventDefault(); // Ngăn form gửi theo cách truyền thống
+
+                const formData = new FormData(reviewForm);
+
+                fetch('@Url.Action("AddReview", "Home")', {
+                    method: 'POST',
+                    body: formData
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        // 1. Tạo HTML cho review mới
+                        const newReview = data.review;
+                        let starsHtml = '';
+                        for (let i = 1; i <= 5; i++) {
+                            starsHtml += `<span class="stars">${i <= newReview.rating ? '★' : '☆'}</span>`;
+                        }
+
+                        const reviewHtml = `
+                            <div class="review-card">
+                                <div class="review-header">
+                                    <div class="review-user"><i class="bi bi-person-circle me-2"></i>${newReview.username}</div>
+                                    <div class="review-date">${newReview.reviewDate}</div>
+                                </div>
+                                <div class="rating-summary mt-2">${starsHtml}</div>
+                                <div class="review-body">${newReview.comment}</div>
+                            </div>`;
+
+                        // 2. Thêm review mới vào đầu danh sách
+                        const reviewList = document.getElementById('reviewList');
+                        reviewList.insertAdjacentHTML('afterbegin', reviewHtml);
+                        
+                        // 3. Xóa thông báo "chưa có đánh giá" nếu có
+                        const noReviewMessage = document.getElementById('no-reviews-message');
+                        if(noReviewMessage) {
+                            noReviewMessage.style.display = 'none';
+                        }
+                        
+                        // 4. Reset form
+                        reviewForm.reset();
+                        // Reset các ngôi sao về trạng thái ban đầu
+                         document.querySelectorAll('.rating-form input').forEach(input => input.checked = false);
+
+
+                    } else {
+                        // Xử lý lỗi (ví dụ: hiển thị một thông báo)
+                        alert(data.message || 'Đã có lỗi xảy ra, vui lòng thử lại.');
+                    }
+                })
+                .catch(error => {
+                    console.error('Error:', error);
+                    alert('Đã có lỗi xảy ra khi gửi đánh giá.');
+                });
+            });
+        }
+    });
+    </script>
+}

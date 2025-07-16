@@ -351,5 +351,38 @@ namespace WebBanHang.Controllers
 
             return RedirectToAction(nameof(Vouchers));
         }
+
+        public IActionResult ManageReviews()
+        {
+            // Kiểm tra quyền Admin
+            if (HttpContext.Session.GetString("Role") != "Admin")
+                return RedirectToAction("AccessDenied", "Account");
+
+            // Lấy tất cả review, kèm theo thông tin của User và Product liên quan
+            var reviews = _context.Reviews
+                                .Include(r => r.User)
+                                .Include(r => r.Product)
+                                .OrderByDescending(r => r.ReviewDate)
+                                .ToList();
+
+            return View("~/Views/Admin/ManageReviews.cshtml", reviews);
+        }
+
+        
+        public async Task<IActionResult> DeleteReview(int id)
+        {
+            if (HttpContext.Session.GetString("Role") != "Admin")
+                return RedirectToAction("AccessDenied", "Account");
+
+            var review = await _context.Reviews.FindAsync(id);
+            if (review != null)
+            {
+                _context.Reviews.Remove(review);
+                await _context.SaveChangesAsync();
+                TempData["Message"] = "Xóa đánh giá thành công!";
+            }
+
+            return RedirectToAction(nameof(ManageReviews));
+        }
     }
 }

@@ -1,0 +1,109 @@
+@model List<WebBanHang.Models.Review>
+
+@{
+    ViewData["Title"] = "Quản lý Đánh giá";
+}
+
+<style>
+    /* Bạn có thể sao chép và tái sử dụng các style từ các trang admin khác */
+    body {
+        background-color: #1a1a1a;
+        color: #f8f9fa;
+    }
+    .admin-container {
+        background-color: #2c2c2c;
+        padding: 2rem;
+        border-radius: 16px;
+    }
+    .admin-table-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    .admin-table-header h2 {
+        margin: 0;
+        font-weight: 600;
+    }
+    .admin-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .admin-table thead th {
+        color: #adb5bd;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-weight: 500;
+        text-align: left;
+        padding: 1rem;
+        border-bottom: 2px solid #4a4a4a;
+    }
+    .admin-table tbody tr {
+        border-bottom: 1px solid #4a4a4a;
+    }
+    .admin-table tbody tr:last-of-type { border-bottom: none; }
+    .admin-table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+    }
+    .comment-cell {
+        max-width: 300px;
+        white-space: pre-wrap;
+        word-wrap: break-word;
+    }
+    .stars { color: #ffc107; }
+</style>
+
+<div class="container my-5">
+    <div class="admin-container">
+        <div class="admin-table-header">
+            <h2>Quản lý Đánh giá</h2>
+            <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
+        </div>
+
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-success">@TempData["Message"]</div>
+        }
+
+        <div class="table-responsive">
+            <table class="admin-table">
+                <thead>
+                    <tr>
+                        <th>Người đánh giá</th>
+                        <th>Sản phẩm</th>
+                        <th>Xếp hạng</th>
+                        <th class="comment-cell">Bình luận</th>
+                        <th>Ngày</th>
+                        <th class="text-end">Hành động</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var review in Model)
+                    {
+                        <tr>
+                            <td>@review.User?.Username</td>
+                            <td>@review.Product?.Name</td>
+                            <td>
+                                <span class="stars">
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        @(i <= review.Rating ? "★" : "☆")
+                                    }
+                                </span>
+                            </td>
+                            <td class="comment-cell">@review.Comment</td>
+                            <td>@review.ReviewDate.ToString("dd/MM/yyyy")</td>
+                            <td class="text-end">
+                                <a class="btn btn-sm btn-outline-danger" asp-action="DeleteReview" asp-route-id="@review.Id"
+                                   onclick="return confirm('Bạn có chắc chắn muốn xóa đánh giá này?');">
+                                    <i class="bi bi-trash"></i> Xóa
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>

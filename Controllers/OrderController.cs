@@ -114,7 +114,7 @@ namespace WebBanHang.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // Tính toán lại tổng tiền và áp dụng voucher (giữ nguyên để bảo mật)
+            // Tính toán lại tổng tiền và áp dụng voucher 
             var subTotal = cartItems.Sum(item => (item.Price ?? 0) * item.Quantity);
             decimal discountAmount = 0;
             string? appliedVoucherCode = HttpContext.Session.GetString(VoucherSession);

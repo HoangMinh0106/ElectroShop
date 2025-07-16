@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using WebBanHang.Data;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using WebBanHang.Models;
 
 namespace WebBanHang.Controllers
 {
@@ -51,19 +52,33 @@ namespace WebBanHang.Controllers
         }
 
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            var product = _context.Products
+            var product = await _context.Products
                 .Include(p => p.Category)
-                .FirstOrDefault(p => p.Id == id);
+                .Include(p => p.Reviews) // Tải các review liên quan
+                    .ThenInclude(r => r.User) // Tải thông tin người dùng đã viết review
+                .FirstOrDefaultAsync(p => p.Id == id);
+
             if (product == null)
             {
                 return NotFound();
             }
 
+            // Tính rating trung bình và gửi ra view
+            if (product.Reviews.Any())
+            {
+                ViewBag.AverageRating = product.Reviews.Average(r => r.Rating);
+                ViewBag.ReviewCount = product.Reviews.Count();
+            }
+            else
+            {
+                ViewBag.AverageRating = 0;
+                ViewBag.ReviewCount = 0;
+            }
+
             return View(product);
         }
-
         public IActionResult ProductsByCategory(int categoryId)
         {
             var category = _context.Categories.FirstOrDefault(c => c.Id == categoryId);
@@ -77,5 +92,55 @@ namespace WebBanHang.Controllers
             ViewBag.CategoryName = category.Name;
             return View(products);
         }
+
+        
+
+        [HttpPost]
+        public async Task<IActionResult> AddReview(int ProductId, int Rating, string Comment)
+        {
+            var username = HttpContext.Session.GetString("Username");
+            if (string.IsNullOrEmpty(username))
+            {
+                return Json(new { success = false, message = "Bạn cần đăng nhập để đánh giá." });
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            if (user == null)
+            {
+                return Json(new { success = false, message = "Lỗi xác thực người dùng." });
+            }
+
+            // Tạo một đối tượng Review mới một cách thủ công từ các tham số
+            var review = new Review
+            {
+                ProductId = ProductId,
+                Rating = Rating,
+                Comment = Comment,
+                UserId = user.Id,
+                ReviewDate = DateTime.Now
+            };
+
+            // Kiểm tra tính hợp lệ của đối tượng vừa tạo
+            if (ModelState.IsValid)
+            {
+                _context.Reviews.Add(review);
+                await _context.SaveChangesAsync();
+
+                // Tạo ViewModel để gửi về client
+                var result = new ReviewViewModel
+                {
+                    Username = user.Username,
+                    Rating = review.Rating,
+                    Comment = review.Comment,
+                    ReviewDate = review.ReviewDate.ToString("dd/MM/yyyy")
+                };
+
+                return Json(new { success = true, review = result });
+            }
+
+            // Nếu vẫn có lỗi, trả về thông báo
+            return Json(new { success = false, message = "Dữ liệu gửi lên không hợp lệ. Vui lòng thử lại." });
+        }
+
     }
 }

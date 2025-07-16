@@ -2,65 +2,96 @@ using Microsoft.EntityFrameworkCore;
 using WebBanHang.Data;
 using WebBanHang.Helpers;
 using WebBanHang.Services;
-using WebBanHang.Models; // Thêm dòng này để sử dụng model User
-using System.Linq; // Đảm bảo có LINQ
-
-
+using WebBanHang.Models;
+using System.Linq;
+using System.Security.Cryptography; // Thêm using để mã hóa
+using System.Text;                // Thêm using để mã hóa
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+// Thêm dịch vụ cho Session và HttpContextAccessor (chỉ cần 1 lần)
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
+
+// Thêm các dịch vụ khác
 builder.Services.AddScoped<VnPayService>();
-// Thêm dịch vụ VnPayService
+builder.Services.AddScoped<CartService>(); // Giả sử bạn có CartService
 
-// Đăng ký CartService
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-builder.Services.AddScoped<CartService>();
-
-// Add services to the container.
+// Thêm dịch vụ cho Controller và View (MVC) và Razor Pages
 builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages(); // Thêm dịch vụ cho Razor Pages
 
-// 👉 Thêm DbContext
+// Thêm DbContext
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// Các dịch vụ khác
-builder.Services.AddSession();
-builder.Services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+
+
 
 var app = builder.Build();
 
-// Middleware
-app.UseSession();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler("/Home/Error");
+    app.UseHsts();
+}
+
+app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
+
+
+app.UseSession();
+
 app.UseAuthorization();
 
-// Route
+
+app.MapRazorPages();
+
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
 
-// ✅ Thêm đoạn này để tạo tài khoản admin nếu chưa có
+
 using (var scope = app.Services.CreateScope())
 {
-    var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+    var services = scope.ServiceProvider;
+    var dbContext = services.GetRequiredService<ApplicationDbContext>();
+    // Đảm bảo database đã được tạo
+    dbContext.Database.EnsureCreated();
 
     // Kiểm tra nếu chưa có tài khoản admin thì tạo mới
-    if (!db.Users.Any(u => u.Role == "Admin"))
+    if (!dbContext.Users.Any(u => u.Role == "Admin"))
     {
-        db.Users.Add(new User
+        // Hàm mã hóa mật khẩu mini
+        string HashPassword(string password)
+        {
+            using (var sha256 = SHA256.Create())
+            {
+                var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+                return BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
+            }
+        }
+        
+        
+        dbContext.Users.Add(new User
         {
             Username = "admin",
-            Password = "123456", // Nên hash nếu dùng thật
+            Password = HashPassword("123456"), // Mật khẩu được mã hóa
             Role = "Admin",
-            Gender = "Nam",
-            PhoneNumber = "0903050953",
-            Address = "Hồ Chí Minh"
+            Gender = "Admin",
+            PhoneNumber = "0123456789",
+            Address = "Trụ sở chính"
         });
 
-        db.SaveChanges();
+        dbContext.SaveChanges();
     }
 }
 
