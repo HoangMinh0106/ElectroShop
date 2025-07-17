@@ -9,6 +9,7 @@
         background-color: #1a1a1a;
         color: #f8f9fa;
     }
+
     .order-history-container {
         max-width: 900px;
         margin: 2rem auto;
@@ -16,29 +17,35 @@
         padding: 2rem;
         border-radius: 16px;
     }
-    .table-dark-custom { 
-        width: 100%; 
-        border-collapse: collapse; 
+
+    .table-dark-custom {
+        width: 100%;
+        border-collapse: collapse;
     }
+
     .table-dark-custom thead th {
-        color: #adb5bd; 
-        text-transform: uppercase; 
+        color: #adb5bd;
+        text-transform: uppercase;
         font-weight: 500;
         font-size: 0.9rem;
-        text-align: left; 
-        padding: 1rem; 
+        text-align: left;
+        padding: 1rem;
         border-bottom: 2px solid #4a4a4a;
     }
-    .table-dark-custom tbody tr { 
-        border-bottom: 1px solid #4a4a4a; 
+
+    .table-dark-custom tbody tr {
+        border-bottom: 1px solid #4a4a4a;
     }
-    .table-dark-custom tbody tr:last-of-type { 
-        border-bottom: none; 
+
+    .table-dark-custom tbody tr:last-of-type {
+        border-bottom: none;
     }
-    .table-dark-custom tbody td { 
-        padding: 1rem; 
-        vertical-align: middle; 
+
+    .table-dark-custom tbody td {
+        padding: 1rem;
+        vertical-align: middle;
     }
+
     .status-badge {
         padding: 0.3rem 0.7rem;
         border-radius: 20px;
@@ -46,21 +53,27 @@
         font-weight: 600;
         text-transform: uppercase;
     }
-    .status-paid, .status-completed { 
-        background-color: #198754; 
-        color: #fff; 
+
+    .status-paid,
+    .status-completed {
+        background-color: #198754;
+        color: #fff;
     }
-    .status-pending { 
-        background-color: #ffc107; 
-        color: #000; 
+
+    .status-pending {
+        background-color: #ffc107;
+        color: #000;
     }
-    .status-cod { 
-        background-color: #6c757d; 
-        color: #fff; 
+
+    .status-cod {
+        background-color: #6c757d;
+        color: #fff;
     }
-    .status-failed, .status-cancelled { 
-        background-color: #dc3545; 
-        color: #fff; 
+
+    .status-failed,
+    .status-cancelled {
+        background-color: #dc3545;
+        color: #fff;
     }
 </style>
 
@@ -87,15 +100,37 @@
                         <tr>
                             <td>#@order.Id</td>
                             <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
-                            <td>@order.TotalAmount.ToString("N0") ₫</td>
+                            <td>@order.TotalAmount.ToString("N0") VNĐ</td>
                             <td>@order.PaymentMethod</td>
                             <td>
                                 <span class="status-badge status-@(order.PaymentStatus?.ToLower() ?? "pending")">
-                                    @order.PaymentStatus
+                                    @* Dùng switch-case để dịch trạng thái sang tiếng Việt *@
+                                    @switch (order.PaymentStatus)
+                                    {
+                                        case "Paid":
+                                            <span>Đã thanh toán</span>
+                                            break;
+                                        case "COD":
+                                            <span>Chờ thanh toán</span>
+                                            break;
+                                        case "Pending":
+                                            <span>Đang xử lý</span>
+                                            break;
+                                        case "Cancelled":
+                                            <span>Đã hủy</span>
+                                            break;
+                                        case "Failed":
+                                            <span>Thất bại</span>
+                                            break;
+                                        default:
+                                            <span>@order.PaymentStatus</span>
+                                            break;
+                                    }
                                 </span>
                             </td>
                             <td class="text-end">
-                                <a asp-controller="Order" asp-action="OrderConfirmation" asp-route-id="@order.Id" class="btn btn-sm btn-outline-light">Xem chi tiết</a>
+                                <a asp-controller="Order" asp-action="OrderConfirmation" asp-route-id="@order.Id"
+                                    class="btn btn-sm btn-outline-light">Xem chi tiết</a>
                             </td>
                         </tr>
                     }

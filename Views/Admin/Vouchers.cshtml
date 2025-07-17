@@ -1,4 +1,5 @@
 @model IEnumerable<WebBanHang.Models.Voucher>
+@using WebBanHang.Models
 
 @{
     ViewData["Title"] = "Quản lý Voucher";
@@ -120,8 +121,7 @@
                     <th>Mã Code</th>
                     <th>Loại giảm giá</th>
                     <th>Giá trị</th>
-                    <th>Đơn hàng tối thiểu</th>
-                    <th>Ngày hết hạn</th>
+                    <th>Gán cho User</th>
                     <th>Kích hoạt</th>
                     <th class="text-end">Hành động</th>
                 </tr>
@@ -132,17 +132,10 @@
                     <tr>
                         <td><strong>@item.Code</strong></td>
                         <td>
-                            @if (item.DiscountType == WebBanHang.Models.DiscountType.Percentage)
-                            {
-                                <span>Phần trăm</span>
-                            }
-                            else
-                            {
-                                <span>Số tiền cố định</span>
-                            }
+                            @(item.DiscountType == DiscountType.Percentage ? "Phần trăm" : "Số tiền cố định")
                         </td>
                         <td>
-                            @if (item.DiscountType == WebBanHang.Models.DiscountType.Percentage)
+                            @if (item.DiscountType == DiscountType.Percentage)
                             {
                                 <span class="fw-bold text-success">@item.DiscountValue %</span>
                             }
@@ -151,8 +144,10 @@
                                 <span class="fw-bold text-success">@item.DiscountValue.ToString("N0") ₫</span>
                             }
                         </td>
-                        <td>@item.MinAmount.ToString("N0") ₫</td>
-                        <td>@item.ExpiryDate.ToString("dd/MM/yyyy")</td>
+                        <td>
+                            @* Thêm cột này để hiển thị voucher đã được gán cho ai *@
+                            @(item.User?.Username ?? "Voucher công khai")
+                        </td>
                         <td>
                             @if(item.IsActive)
                             {
@@ -164,8 +159,11 @@
                             }
                         </td>
                         <td class="actions-cell">
-                            <a asp-action="EditVoucher" asp-route-id="@item.Id" class="btn btn-sm btn-outline-light">Sửa</a>
-                            <a asp-action="DeleteVoucher" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger">Xóa</a>
+                            <div class="d-flex gap-2 justify-content-end">
+                                <a asp-action="AssignVoucher" asp-route-voucherId="@item.Id" class="btn btn-sm btn-outline-primary">Gán</a>
+                                <a asp-action="EditVoucher" asp-route-id="@item.Id" class="btn btn-sm btn-outline-light">Sửa</a>
+                                <a asp-action="DeleteVoucher" asp-route-id="@item.Id" class="btn btn-sm btn-outline-danger" onclick="return confirm('Bạn có chắc muốn xóa voucher này?');">Xóa</a>
+                            </div>
                         </td>
                     </tr>
                 }
@@ -177,15 +175,13 @@
 @section Scripts {
     <script>
     document.addEventListener("DOMContentLoaded", function () {
+        // Tự động ẩn thông báo thành công sau vài giây
         var alertBox = document.getElementById('successAlert');
         if(alertBox) {
             setTimeout(function () {
-                alertBox.style.transition = 'opacity 0.5s ease';
-                alertBox.style.opacity = '0';
-                setTimeout(function() {
-                    alertBox.style.display = 'none';
-                }, 500);
-            }, 1000); // Bắt đầu ẩn sau 3 giây
+                var bsAlert = new bootstrap.Alert(alertBox);
+                bsAlert.close();
+            }, 1000); 
         }
     });
     </script>

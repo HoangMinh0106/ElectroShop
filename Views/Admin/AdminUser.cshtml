@@ -2,9 +2,11 @@
 
 @{
     ViewData["Title"] = "Quản lý người dùng";
+    // Giữ nguyên Layout của bạn
 }
 
 <style>
+    /* CSS của bạn giữ nguyên */
     body {
         background-color: #1a1a1a;
         color: #f8f9fa;
@@ -56,7 +58,6 @@
         vertical-align: middle;
     }
 
-    /* Tùy chỉnh nút */
     .btn-custom-red {
         background-color: #d9232d; 
         border-color: #d9232d; 
@@ -73,7 +74,8 @@
         <div class="admin-table-header">
             <h2>Quản lý người dùng</h2>
             <div class="d-flex gap-2">
-                <a asp-controller="Admin" asp-action="CreateUser" class="btn btn-custom-red">Thêm người dùng mới</a>
+                @* Nút này hiện chưa có action, nếu bạn cần sẽ làm sau *@
+                @* <a asp-controller="Admin" asp-action="CreateUser" class="btn btn-custom-red">Thêm người dùng mới</a> *@
                 <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
             </div>
         </div>
@@ -83,11 +85,9 @@
                 <tr>
                     <th>ID</th>
                     <th>Tên đăng nhập</th>
-                    <th>Giới tính</th>
                     <th>Điện thoại</th>
-                    <th>Địa chỉ</th>
                     <th>Vai trò</th>
-                    <th>Hành động</th>
+                    <th>Điểm tích lũy</th> <th>Hành động</th>
                 </tr>
             </thead>
             <tbody>
@@ -96,13 +96,15 @@
                     <tr>
                         <td>@user.Id</td>
                         <td>@user.Username</td>
-                        <td>@user.Gender</td>
                         <td>@user.PhoneNumber</td>
-                        <td>@user.Address</td>
                         <td>@user.Role</td>
-                        <td>
-                            <a class="btn btn-outline-danger btn-sm" asp-action="DeleteUser" asp-route-id="@user.Id"
-                               onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?');">Xóa</a>
+                        <td>@user.Points.ToString("N0")</td> <td>
+                            <div class="d-flex gap-2">
+                                <a class="btn btn-outline-danger btn-sm" asp-action="DeleteUser" asp-route-id="@user.Id"
+                                   onclick="return confirm('Bạn có chắc chắn muốn xóa người dùng này?');">
+                                    Xóa
+                                </a>
+                            </div>
                         </td>
                     </tr>
                 }

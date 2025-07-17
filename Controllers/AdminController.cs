@@ -7,11 +7,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using System.IO;
 using System;
-using System.Collections.Generic;
 
 namespace WebBanHang.Controllers
 {
-    //LINQ (Language-Integrated Query) là một công nghệ của Microsoft tích hợp khả năng truy vấn dữ liệu trực tiếp vào trong ngôn ngữ lập trình C#.
     public class AdminController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -21,38 +19,32 @@ namespace WebBanHang.Controllers
             _context = context;
         }
 
-
         public IActionResult Index()
         {
-            // Kiểm tra xem người dùng đã đăng nhập với vai trò "Admin" trong Session hay chưa.
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
                 return RedirectToAction("AccessDenied", "Account");
-            // Nếu đã đăng nhập với vai trò "Admin", trả về trang chính của Admin.
             return View("~/Views/Admin/Index.cshtml");
         }
 
-
+        // === QUẢN LÝ NGƯỜI DÙNG ===
         public IActionResult AdminUser()
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
                 return RedirectToAction("AccessDenied", "Account");
-            // Lấy danh sách người dùng từ cơ sở dữ liệu.
-            // Sử dụng _context để truy vấn dữ liệu từ bảng Users.
             var users = _context.Users.ToList();
             return View("~/Views/Admin/AdminUser.cshtml", users);
         }
 
         public IActionResult DeleteUser(int id)
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
                 return RedirectToAction("AccessDenied", "Account");
 
             var user = _context.Users.Find(id);
             if (user != null)
             {
-                if (user.Role == "Admin")
+                if (user.Role.Equals("Admin", StringComparison.OrdinalIgnoreCase))
                 {
-                    // Thêm một lớp bảo vệ: không cho phép xóa tài khoản có vai trò "Admin".
                     TempData["Error"] = "Không thể xóa tài khoản Admin.";
                     return RedirectToAction("AdminUser");
                 }
@@ -62,9 +54,10 @@ namespace WebBanHang.Controllers
             return RedirectToAction("AdminUser");
         }
 
+        // === QUẢN LÝ DANH MỤC ===
         public IActionResult Categories()
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
                 return RedirectToAction("AccessDenied", "Account");
 
             var categories = _context.Categories.ToList();
@@ -73,7 +66,7 @@ namespace WebBanHang.Controllers
 
         public IActionResult CreateCategory()
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
                 return RedirectToAction("AccessDenied", "Account");
             return View("~/Views/Admin/CreateCategory.cshtml");
         }
@@ -92,7 +85,7 @@ namespace WebBanHang.Controllers
 
         public IActionResult EditCategory(int id)
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
                 return RedirectToAction("AccessDenied", "Account");
             var category = _context.Categories.Find(id);
             if (category == null) return NotFound();
@@ -113,7 +106,7 @@ namespace WebBanHang.Controllers
 
         public IActionResult DeleteCategory(int id)
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
                 return RedirectToAction("AccessDenied", "Account");
 
             var category = _context.Categories.Find(id);
@@ -131,10 +124,10 @@ namespace WebBanHang.Controllers
             return RedirectToAction("Categories");
         }
 
-
+        // === QUẢN LÝ SẢN PHẨM ===
         public IActionResult Products()
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
                 return RedirectToAction("AccessDenied", "Account");
             var products = _context.Products.Include(p => p.Category).ToList();
             return View("~/Views/Admin/Products.cshtml", products);
@@ -142,7 +135,7 @@ namespace WebBanHang.Controllers
 
         public IActionResult CreateProduct()
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
                 return RedirectToAction("AccessDenied", "Account");
             ViewBag.Categories = _context.Categories.ToList();
             return View("~/Views/Admin/CreateProduct.cshtml");
@@ -173,7 +166,7 @@ namespace WebBanHang.Controllers
 
         public IActionResult EditProduct(int id)
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
                 return RedirectToAction("AccessDenied", "Account");
             var product = _context.Products.Find(id);
             if (product == null) return NotFound();
@@ -213,7 +206,7 @@ namespace WebBanHang.Controllers
 
         public IActionResult DeleteProduct(int id)
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
                 return RedirectToAction("AccessDenied", "Account");
             var product = _context.Products.Find(id);
             if (product != null)
@@ -224,17 +217,16 @@ namespace WebBanHang.Controllers
             return RedirectToAction("Products");
         }
 
-
+        // === QUẢN LÝ DOANH THU & ĐƠN HÀNG ===
         public IActionResult Revenue()
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
                 return RedirectToAction("AccessDenied", "Account");
-            // Lấy các đơn hàng đã thanh toán hoặc COD.
             var orders = _context.Orders
                 .Where(o => o.PaymentStatus == "Paid" || o.PaymentStatus == "COD")
                 .OrderByDescending(o => o.OrderDate)
                 .ToList();
-            // Dùng LINQ để tính toán và nhóm dữ liệu ( cả tháng cả năm )
+
             ViewBag.TotalRevenue = orders.Sum(o => o.TotalAmount);
             ViewBag.RevenueByDay = orders.GroupBy(o => o.OrderDate.Date).Select(g => new { Date = g.Key, Total = g.Sum(x => x.TotalAmount) }).OrderBy(g => g.Date).ToList();
             ViewBag.RevenueByMonth = orders.GroupBy(o => new { o.OrderDate.Year, o.OrderDate.Month }).Select(g => new { Month = new DateTime(g.Key.Year, g.Key.Month, 1), Total = g.Sum(x => x.TotalAmount) }).OrderBy(g => g.Month).ToList();
@@ -243,12 +235,10 @@ namespace WebBanHang.Controllers
             return View("~/Views/Admin/Revenue.cshtml", orders);
         }
 
-
         public IActionResult ManageOrders()
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
                 return RedirectToAction("AccessDenied", "Account");
-            // Dùng LINQ Join để kết nối bảng Orders và Users, lấy username.
             var ordersWithUsers = _context.Orders
                 .Join(
                     _context.Users,
@@ -257,7 +247,7 @@ namespace WebBanHang.Controllers
                     (order, user) => new OrderViewModel
                     {
                         OrderId = order.Id,
-                        Username = user.Username, // Lấy username từ đối tượng user đã join
+                        Username = user.Username,
                         OrderDate = order.OrderDate,
                         TotalAmount = order.TotalAmount,
                         PaymentMethod = order.PaymentMethod,
@@ -269,19 +259,54 @@ namespace WebBanHang.Controllers
             return View("~/Views/Admin/ManageOrders.cshtml", ordersWithUsers);
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateOrderStatus(int orderId, string status)
+        {
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
+                return RedirectToAction("AccessDenied", "Account");
+
+            var order = await _context.Orders.FindAsync(orderId);
+            if (order == null)
+            {
+                return NotFound();
+            }
+
+            order.PaymentStatus = status;
+            _context.Orders.Update(order);
+
+            if (status == "Paid")
+            {
+                var user = await _context.Users.FindAsync(order.UserId);
+                if (user != null)
+                {
+                    int pointsEarned = (int)Math.Floor(order.TotalAmount / 10000);
+                    if (pointsEarned > 0)
+                    {
+                        user.Points += pointsEarned;
+                        _context.Users.Update(user);
+                    }
+                }
+            }
+
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = "Cập nhật trạng thái đơn hàng thành công!";
+            return RedirectToAction(nameof(ManageOrders));
+        }
+
         // === QUẢN LÝ VOUCHER ===
         public IActionResult Vouchers()
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
                 return RedirectToAction("AccessDenied", "Account");
-
-            var vouchers = _context.Vouchers.ToList();
+            var vouchers = _context.Vouchers.Include(v => v.User).ToList();
             return View("~/Views/Admin/Vouchers.cshtml", vouchers);
         }
 
         public IActionResult CreateVoucher()
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
                 return RedirectToAction("AccessDenied", "Account");
 
             return View("~/Views/Admin/CreateVoucher.cshtml");
@@ -295,7 +320,7 @@ namespace WebBanHang.Controllers
             {
                 _context.Vouchers.Add(voucher);
                 await _context.SaveChangesAsync();
-                TempData["Message"] = "Tạo voucher thành công!";
+                TempData["Message"] = "Tạo voucher công khai thành công!";
                 return RedirectToAction(nameof(Vouchers));
             }
             return View("~/Views/Admin/CreateVoucher.cshtml", voucher);
@@ -303,7 +328,7 @@ namespace WebBanHang.Controllers
 
         public async Task<IActionResult> EditVoucher(int? id)
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
                 return RedirectToAction("AccessDenied", "Account");
 
             if (id == null) return NotFound();
@@ -338,7 +363,7 @@ namespace WebBanHang.Controllers
 
         public async Task<IActionResult> DeleteVoucher(int id)
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
                 return RedirectToAction("AccessDenied", "Account");
 
             var voucher = await _context.Vouchers.FindAsync(id);
@@ -352,13 +377,88 @@ namespace WebBanHang.Controllers
             return RedirectToAction(nameof(Vouchers));
         }
 
-        public IActionResult ManageReviews()
+        // *** LOGIC GÁN VOUCHER ĐÃ CẬP NHẬT TRỪ ĐIỂM ***
+        // GET: Hiển thị trang chọn User để gán voucher
+        [HttpGet]
+        public IActionResult AssignVoucher(int voucherId)
         {
-            // Kiểm tra quyền Admin
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
                 return RedirectToAction("AccessDenied", "Account");
 
-            // Lấy tất cả review, kèm theo thông tin của User và Product liên quan
+            var voucherToAssign = _context.Vouchers.Find(voucherId);
+            if (voucherToAssign == null)
+            {
+                return NotFound();
+            }
+
+            var users = _context.Users.Where(u => u.Role != "Admin").ToList();
+
+            ViewBag.Voucher = voucherToAssign;
+            return View("~/Views/Admin/AssignVoucher.cshtml", users);
+        }
+
+        // POST: Thực hiện việc gán (tạo bản sao) voucher cho user và trừ điểm
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AssignVoucher(int voucherId, int userId)
+        {
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
+                return RedirectToAction("AccessDenied", "Account");
+
+            var templateVoucher = await _context.Vouchers.FindAsync(voucherId);
+            var targetUser = await _context.Users.FindAsync(userId);
+
+            if (templateVoucher == null || targetUser == null)
+            {
+                return NotFound();
+            }
+
+            // Bổ sung logic trừ điểm tích lũy
+            int pointsToDeduct = 500; // Giả sử tốn 500 điểm, bạn có thể thay đổi
+            if (targetUser.Points < pointsToDeduct)
+            {
+                TempData["Message"] = $"Lỗi: Người dùng '{targetUser.Username}' không đủ điểm để gán voucher (cần {pointsToDeduct} điểm).";
+                return RedirectToAction("Vouchers");
+            }
+            targetUser.Points -= pointsToDeduct;
+            _context.Users.Update(targetUser);
+
+            // Tạo một bản sao của voucher để gán cho người dùng
+            var newVoucher = new Voucher
+            {
+                Code = $"{templateVoucher.Code}-{Guid.NewGuid().ToString("N").ToUpper().Substring(0, 4)}",
+                DiscountType = templateVoucher.DiscountType,
+                DiscountValue = templateVoucher.DiscountValue,
+                MinAmount = templateVoucher.MinAmount,
+                ExpiryDate = templateVoucher.ExpiryDate,
+                IsActive = true,
+                IsTemplate = false,
+                UserId = targetUser.Id
+            };
+
+            _context.Vouchers.Add(newVoucher);
+            ////thông báo cho người dùng về voucher mới
+            var notification = new Notification
+            {
+                UserId = targetUser.Id,
+                Message = $"Bạn vừa nhận được một voucher mới: {newVoucher.Code}",
+                Url = "/Account/MyVouchers" // Link tới trang Ví Voucher
+            };
+            _context.Notifications.Add(notification);
+           
+            await _context.SaveChangesAsync();
+
+            TempData["Message"] = $"Đã gán voucher '{templateVoucher.Code}' cho người dùng '{targetUser.Username}' và trừ {pointsToDeduct} điểm thành công!";
+            return RedirectToAction("Vouchers");
+        }
+
+
+        // === QUẢN LÝ ĐÁNH GIÁ ===
+        public IActionResult ManageReviews()
+        {
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
+                return RedirectToAction("AccessDenied", "Account");
+
             var reviews = _context.Reviews
                                 .Include(r => r.User)
                                 .Include(r => r.Product)
@@ -368,10 +468,10 @@ namespace WebBanHang.Controllers
             return View("~/Views/Admin/ManageReviews.cshtml", reviews);
         }
 
-        
+
         public async Task<IActionResult> DeleteReview(int id)
         {
-            if (HttpContext.Session.GetString("Role") != "Admin")
+            if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
                 return RedirectToAction("AccessDenied", "Account");
 
             var review = await _context.Reviews.FindAsync(id);

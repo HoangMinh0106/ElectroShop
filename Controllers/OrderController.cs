@@ -9,6 +9,7 @@ using WebBanHang.Services;
 using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using WebBanHang.Helpers;
+using System.Threading.Tasks;
 
 namespace WebBanHang.Controllers
 {
@@ -18,6 +19,7 @@ namespace WebBanHang.Controllers
         private readonly VnPayService _vnPayService;
         private readonly IConfiguration _config;
         
+        // Giữ nguyên tên session key của bạn
         private const string CartSession = "CartSession";
         private const string VoucherSession = "VoucherCode";
 
@@ -58,11 +60,18 @@ namespace WebBanHang.Controllers
             if (!string.IsNullOrEmpty(appliedVoucherCode))
             {
                 var voucher = _context.Vouchers.FirstOrDefault(v => v.Code == appliedVoucherCode && v.IsActive && v.ExpiryDate > DateTime.Now);
-                if (voucher != null && subTotal >= voucher.MinAmount)
+                // --- CHỈ THÊM ĐIỀU KIỆN KIỂM TRA USER VÀO ĐÂY ---
+                if (voucher != null && subTotal >= voucher.MinAmount && (voucher.UserId == null || voucher.UserId == user.Id))
                 {
                     discountAmount = voucher.DiscountType == DiscountType.FixedAmount
                         ? voucher.DiscountValue
                         : subTotal * (voucher.DiscountValue / 100);
+                }
+                else
+                {
+                    // Nếu voucher không còn hợp lệ, xóa khỏi session
+                    HttpContext.Session.Remove(VoucherSession);
+                    appliedVoucherCode = null; // Đặt lại mã voucher
                 }
             }
             var grandTotal = subTotal - discountAmount;
@@ -75,10 +84,11 @@ namespace WebBanHang.Controllers
                 Phone = user.PhoneNumber,
                 Address = user.Address,
                 
-                // Gán các giá trị đã tính toán vào model
                 SubTotal = subTotal,
                 DiscountAmount = discountAmount,
-                GrandTotal = grandTotal
+                GrandTotal = grandTotal,
+                // --- THÊM DÒNG NÀY ĐỂ HIỂN THỊ LẠI MÃ VOUCHER ---
+                AppliedVoucherCode = appliedVoucherCode
             };
             return View(model);
         }
@@ -89,7 +99,6 @@ namespace WebBanHang.Controllers
         {
             if (!ModelState.IsValid)
             {
-                 // Nếu model không hợp lệ, cần tải lại thông tin giá để hiển thị lại trang
                 var cartItemsForView = HttpContext.Session.GetObjectFromJson<List<CartItem>>(CartSession) ?? new List<CartItem>();
                 var subTotalForView = cartItemsForView.Sum(item => (item.Price ?? 0) * item.Quantity);
 
@@ -114,7 +123,6 @@ namespace WebBanHang.Controllers
                 return RedirectToAction("Login", "Account");
             }
 
-            // Tính toán lại tổng tiền và áp dụng voucher 
             var subTotal = cartItems.Sum(item => (item.Price ?? 0) * item.Quantity);
             decimal discountAmount = 0;
             string? appliedVoucherCode = HttpContext.Session.GetString(VoucherSession);
@@ -122,15 +130,19 @@ namespace WebBanHang.Controllers
             if (!string.IsNullOrEmpty(appliedVoucherCode))
             {
                 var voucher = _context.Vouchers.FirstOrDefault(v => v.Code == appliedVoucherCode && v.IsActive && v.ExpiryDate > DateTime.Now);
-                if (voucher != null && subTotal >= voucher.MinAmount)
+                // --- CHỈ THÊM ĐIỀU KIỆN KIỂM TRA USER VÀO ĐÂY ---
+                if (voucher != null && subTotal >= voucher.MinAmount && (voucher.UserId == null || voucher.UserId == user.Id))
                 {
                     discountAmount = voucher.DiscountType == DiscountType.FixedAmount
                         ? voucher.DiscountValue
                         : subTotal * (voucher.DiscountValue / 100);
                 }
+                else
+                {
+                    appliedVoucherCode = null; // Đảm bảo không lưu voucher không hợp lệ vào đơn hàng
+                }
             }
 
-            // Tạo đơn hàng mới với thông tin đã được cập nhật
             var order = new Order
             {
                 UserId = user.Id,
@@ -154,7 +166,6 @@ namespace WebBanHang.Controllers
             _context.Orders.Add(order);
             _context.SaveChanges();
 
-            // Phân nhánh logic dựa trên phương thức thanh toán
             if (model.PaymentMethod == "VNPAY")
             {
                 var vnPayModel = new VnPayRequestModel
@@ -179,7 +190,6 @@ namespace WebBanHang.Controllers
             }
         }
 
-        // Action xử lý callback từ VNPAY
         public IActionResult PaymentCallBack()
         {
             var response = _vnPayService.PaymentExecute(Request.Query);

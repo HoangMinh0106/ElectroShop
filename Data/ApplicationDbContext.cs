@@ -19,6 +19,8 @@ namespace WebBanHang.Data
         public DbSet<OrderItem> OrderItems { get; set; }
         public DbSet<Voucher> Vouchers { get; set; }
         public DbSet<Review> Reviews { get; set; }
+        
+        public DbSet<Notification> Notifications { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -83,6 +85,8 @@ namespace WebBanHang.Data
                 new Product { Id = 40, Name = "Bàn phím 10", Description = "Bàn phím cơ học 10", Price = 1000000m, ImageUrl = "/images/keyboard10.jpg", CategoryId = 4 }
             );
 
+
+
             modelBuilder.Entity<Voucher>().HasData(
                 new Voucher
                 {
@@ -92,7 +96,8 @@ namespace WebBanHang.Data
                     DiscountValue = 25m,
                     MinAmount = 200000m,
                     ExpiryDate = new DateTime(2025, 12, 31, 23, 59, 59),
-                    IsActive = true
+                    IsActive = false,
+                    IsTemplate = true
                 },
                 new Voucher
                 {
@@ -102,7 +107,8 @@ namespace WebBanHang.Data
                     DiscountValue = 50000m,
                     MinAmount = 300000m,
                     ExpiryDate = new DateTime(2025, 10, 11, 23, 59, 59),
-                    IsActive = true
+                    IsActive = true, // Các thuộc tính còn lại sẽ dùng giá trị mặc định (false)
+                    IsTemplate = false
                 }
             );
         }

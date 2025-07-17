@@ -3,6 +3,8 @@ using WebBanHang.Models;
 using WebBanHang.Data;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
+using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks; 
 
 namespace WebBanHang.Controllers
 {
@@ -54,7 +56,7 @@ namespace WebBanHang.Controllers
                 HttpContext.Session.SetString("Username", user.Username);
                 HttpContext.Session.SetString("Role", user.Role);
                 // Chuyển hướng dựa trên vai trò
-                if (user.Role == "Admin")
+                if (user.Role.Equals("Admin", StringComparison.OrdinalIgnoreCase))
                     return RedirectToAction("Index", "Admin");
                 else
                     return RedirectToAction("Index", "Home");
@@ -76,7 +78,7 @@ namespace WebBanHang.Controllers
         {
             return View();
         }
-    
+
         public IActionResult Profile()
         {
             // Lấy username từ session
@@ -96,11 +98,11 @@ namespace WebBanHang.Controllers
                 return RedirectToAction("Login");
             }
 
-         
+
             return View(user);
         }
 
-  
+
         [HttpPost]
         public IActionResult Profile(User updatedUser)
         {
@@ -151,5 +153,30 @@ namespace WebBanHang.Controllers
 
             return View(userOrders);
         }
+
+        public async Task<IActionResult> MyVouchers()
+        {
+            var username = HttpContext.Session.GetString("Username");
+            if (string.IsNullOrEmpty(username))
+            {
+                return RedirectToAction("Login");
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
+            if (user == null)
+            {
+                return NotFound();
+            }
+
+            // Lấy tất cả voucher có UserId khớp với Id của người dùng, sắp xếp theo ngày hết hạn
+            var userVouchers = await _context.Vouchers
+                                             .Where(v => v.UserId == user.Id && v.IsTemplate == false) // Chỉ lấy voucher thật, không lấy template
+                                             .OrderByDescending(v => v.ExpiryDate)
+                                             .ToListAsync();
+
+            return View(userVouchers);
+        }
+
+        
     }
 }

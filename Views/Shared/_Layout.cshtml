@@ -3,14 +3,14 @@
 @using WebBanHang.Models
 @using WebBanHang.Helpers
 @{
-    var cart = Context.Session.GetObjectFromJson<List<CartItem>>("CartSession") ?? new List<CartItem>();
+    var cart = Context.Session.GetObjectFromJson<List<CartItem>>("Cart") ?? new List<CartItem>();
     int totalQuantity = cart.Sum(item => item.Quantity);
 }
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
-    <meta charset="utf-8" />
+    <meta charset="utf-t" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewData["Title"] - ElectroShop</title>
     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
@@ -20,7 +20,6 @@
 </head>
 
 <body>
-    <!-- AJAX (Asynchronous JavaScript and XML) là một tập hợp các kỹ thuật phát triển web cho phép một trang web giao tiếp với máy chủ (server) trong nền mà không cần phải tải lại toàn bộ trang.Nói một cách đơn giản, AJAX giúp cập nhật một phần của trang web với dữ liệu mới mà không làm gián đoạn trải nghiệm của người dùng. -->
     <header>
         <nav class="navbar navbar-expand-sm navbar-light bg-white border-bottom box-shadow mb-3">
             <div class="container-fluid">
@@ -43,7 +42,7 @@
                     <ul class="navbar-nav ms-auto align-items-center">
                         <li class="nav-item position-relative">
                             <a class="nav-link text-dark" asp-controller="Cart" asp-action="Index">
-                                🛒 Giỏ hàng
+                                <i class="bi bi-cart-fill"></i> Giỏ hàng
                                 @if (totalQuantity > 0)
                                 {
                                     <span
@@ -56,6 +55,7 @@
 
                         @if (HttpContextAccessor.HttpContext.Session.GetString("Username") != null)
                         {
+                            @await Component.InvokeAsync("Notification")
                             <li class="nav-item dropdown">
                                 <a class="nav-link text-dark dropdown-toggle" href="#" id="userDropdown" role="button"
                                     data-bs-toggle="dropdown" aria-expanded="false">
@@ -69,7 +69,10 @@
                                         <a class="dropdown-item" asp-controller="Account" asp-action="MyOrders">Đơn hàng của
                                             tôi</a>
                                     </li>
-                                    @if (HttpContextAccessor.HttpContext.Session.GetString("Role") == "Admin")
+                                    <li>
+                                        <a class="dropdown-item" asp-action="MyVouchers" asp-controller="Account" >Voucher của tôi</a>
+                                    </li>
+                                    @if (HttpContextAccessor.HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) == true)
                                     {
                                         <li>
                                             <a class="dropdown-item" asp-controller="Admin" asp-action="Index">Trang quản
@@ -144,7 +147,61 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
+    
     @await RenderSectionAsync("Scripts", required: false)
+
+    @section Scripts {
+    // Giữ lại các script đã có của bạn (nếu có)
+    @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        // Lắng nghe sự kiện click trên toàn bộ document
+        document.body.addEventListener('click', function(event) {
+            // Kiểm tra xem phần tử được click có phải là nút xóa không
+            if (event.target.classList.contains('delete-notification-btn')) {
+                event.preventDefault(); // Ngăn chặn các hành vi mặc định
+                event.stopPropagation(); // Ngăn dropdown tự đóng lại
+
+                const button = event.target;
+                const notificationId = button.dataset.id;
+                const notificationItem = button.closest('.notification-item'); // Tìm thẻ li cha
+
+                // Lấy anti-forgery token
+                const token = document.querySelector('#antiForgeryTokenForm input[name="__RequestVerificationToken"]').value;
+
+                if (confirm('Bạn có chắc muốn xóa thông báo này?')) {
+                    fetch('/Account/DeleteNotification', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/x-www-form-urlencoded',
+                            'RequestVerificationToken': token
+                        },
+                        body: 'notificationId=' + notificationId
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Xóa thông báo khỏi giao diện một cách mượt mà
+                            notificationItem.style.transition = 'opacity 0.5s ease';
+                            notificationItem.style.opacity = '0';
+                            setTimeout(() => {
+                                notificationItem.remove();
+                            }, 500);
+                        } else {
+                            alert('Lỗi: Không thể xóa thông báo. ' + (data.message || ''));
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        alert('Đã xảy ra lỗi kết nối.');
+                    });
+                }
+            }
+        });
+    });
+    </script>
+}
 </body>
 
 </html>

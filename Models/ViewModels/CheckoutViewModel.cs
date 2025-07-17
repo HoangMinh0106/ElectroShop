@@ -26,5 +26,7 @@ namespace WebBanHang.Models
         public decimal SubTotal { get; set; }
         public decimal DiscountAmount { get; set; }
         public decimal GrandTotal { get; set; }
+
+        public string? AppliedVoucherCode { get; set; }
     }
 }

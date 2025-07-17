@@ -6,6 +6,9 @@ using WebBanHang.Helpers;
 using Microsoft.AspNetCore.Http;
 using System.Collections.Generic;
 using System.Linq;
+using System; // Thêm using này để dùng DateTime
+using Microsoft.EntityFrameworkCore;
+
 
 namespace WebBanHang.Controllers
 {
@@ -162,19 +165,42 @@ namespace WebBanHang.Controllers
             {
                 TempData["Message"] = $"Voucher chỉ áp dụng cho đơn hàng từ {voucher.MinAmount:N0}đ.";
             }
+            // --- PHẦN ĐƯỢC THÊM VÀO ---
             else
             {
-                HttpContext.Session.SetString(VoucherSession, voucher.Code);
-                TempData["Message"] = "Áp dụng voucher thành công!";
-            }
+                var username = HttpContext.Session.GetString("Username");
+                if (string.IsNullOrEmpty(username))
+                {
+                    TempData["Message"] = "Bạn cần đăng nhập để dùng voucher này.";
+                    return RedirectToAction("Login", "Account");
+                }
+                var user = _context.Users.FirstOrDefault(u => u.Username == username);
 
+                // Kiểm tra xem voucher có phải của riêng ai không, và có phải của user này không
+                if (voucher.UserId != null && voucher.UserId != user.Id)
+                {
+                    TempData["Message"] = "Bạn không có quyền sử dụng voucher này.";
+                }
+                else
+                {
+                    HttpContext.Session.SetString(VoucherSession, voucher.Code);
+                    TempData["Message"] = "Áp dụng voucher thành công!";
+                }
+            }
+            // --- KẾT THÚC PHẦN THÊM VÀO ---
+
+            // LƯU Ý: Dòng này đang chuyển hướng về trang giỏ hàng. 
+            // Nếu bạn muốn nó hoạt động ở trang thanh toán, bạn cần đổi "Index" thành "Checkout" và Controller "Cart" thành "Order".
+            // Ví dụ: return RedirectToAction("Checkout", "Order");
             return RedirectToAction("Index");
+            
         }
 
         public IActionResult RemoveVoucher()
         {
             HttpContext.Session.Remove(VoucherSession);
             TempData["Message"] = "Đã xóa voucher.";
+            // Tương tự như trên, bạn có thể cần đổi RedirectToAction tại đây.
             return RedirectToAction("Index");
         }
     }

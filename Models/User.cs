@@ -27,7 +27,10 @@ namespace WebBanHang.Models
 
         [Required]
         public ICollection<Order> Orders { get; set; } = new List<Order>();
-        
+
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
+
+        //điểm tích lũy 
+        public int Points { get; set; } = 0; // Mặc định là 0 điểm khi tạo mới
     }
 }

@@ -18,9 +18,9 @@ builder.Services.AddSession(options =>
     options.Cookie.IsEssential = true;
 });
 
-// Thêm các dịch vụ khác
+
 builder.Services.AddScoped<VnPayService>();
-builder.Services.AddScoped<CartService>(); // Giả sử bạn có CartService
+builder.Services.AddScoped<CartService>(); 
 
 // Thêm dịch vụ cho Controller và View (MVC) và Razor Pages
 builder.Services.AddControllersWithViews();
@@ -30,6 +30,8 @@ builder.Services.AddRazorPages(); // Thêm dịch vụ cho Razor Pages
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+//dịch vụ cho AutoVoucherService
+builder.Services.AddHostedService<AutoVoucherService>();
 
 
 

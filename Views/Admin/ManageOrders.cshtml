@@ -55,6 +55,13 @@
         padding: 1rem;
         vertical-align: middle;
     }
+    
+    /* Style cho form cập nhật */
+    .update-form {
+        display: flex;
+        align-items: center;
+        gap: 10px; /* Khoảng cách giữa select và button */
+    }
 
 </style>
 
@@ -65,6 +72,27 @@
             <a asp-controller="Admin" asp-action="Index" class="btn btn-outline-secondary">Quay lại</a>
         </div>
 
+       @if (TempData["Message"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show" role="alert" id="orderSuccessAlert">
+        @TempData["Message"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            setTimeout(function () {
+                var alertBox = document.getElementById('orderSuccessAlert');
+                if (alertBox) {
+                    alertBox.style.opacity = '0';
+                    setTimeout(function () {
+                        alertBox.style.display = 'none';
+                    }, 500);
+                }
+            }, 1000);
+        });
+    </script>
+}
+
         <table class="admin-table">
             <thead>
                 <tr>
@@ -72,18 +100,36 @@
                     <th>Người đặt</th>
                     <th>Ngày đặt</th>
                     <th>Tổng tiền</th>
-                    <th>Phương thức thanh toán</th>
+                    <th>PTTT</th>
+                    <th>Trạng thái & Hành động</th> @* <-- THÊM CỘT MỚI *@
                 </tr>
             </thead>
             <tbody>
                 @foreach (var order in Model)
                 {
                     <tr>
-                        <td>@order.OrderId</td>
+                        <td>#@order.OrderId</td>
                         <td>@order.Username</td>
                         <td>@order.OrderDate.ToString("dd/MM/yyyy")</td>
                         <td>@order.TotalAmount.ToString("N0") VNĐ</td>
                         <td>@order.PaymentMethod</td>
+                        
+                 
+                        <td>
+                            <form asp-controller="Admin" asp-action="UpdateOrderStatus" method="post" class="update-form">
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="orderId" value="@order.OrderId" />
+                                
+                                <select name="status" class="form-select form-select-sm" style="width: 150px;">
+                                    <option value="Pending" selected="@(order.PaymentStatus == "Pending")">Chờ xử lý</option>
+                                    <option value="Paid" selected="@(order.PaymentStatus == "Paid")">Đã thanh toán</option>
+                                    <option value="COD" selected="@(order.PaymentStatus == "COD")">COD</option>
+                                    <option value="Cancelled" selected="@(order.PaymentStatus == "Cancelled")">Đã hủy</option>
+                                </select>
+
+                                <button type="submit" class="btn btn-primary btn-sm">Cập nhật</button>
+                            </form>
+                        </td>
                     </tr>
                 }
             </tbody>

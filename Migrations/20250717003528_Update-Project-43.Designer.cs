@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebBanHang.Data;
 
@@ -11,9 +12,11 @@ using WebBanHang.Data;
 namespace DoAnWebNC.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250717003528_Update-Project-43")]
+    partial class UpdateProject43
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -111,37 +114,6 @@ namespace DoAnWebNC.Migrations
                             Id = 8,
                             Name = "Phụ kiện"
                         });
-                });
-
-            modelBuilder.Entity("WebBanHang.Models.Notification", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
-
-                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("datetime2");
-
-                    b.Property<bool>("IsRead")
-                        .HasColumnType("bit");
-
-                    b.Property<string>("Message")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<string>("Url")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<int>("UserId")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("Notifications");
                 });
 
             modelBuilder.Entity("WebBanHang.Models.Order", b =>
@@ -611,9 +583,6 @@ namespace DoAnWebNC.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int>("Points")
-                        .HasColumnType("int");
-
                     b.Property<string>("Role")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -651,18 +620,10 @@ namespace DoAnWebNC.Migrations
                     b.Property<bool>("IsActive")
                         .HasColumnType("bit");
 
-                    b.Property<bool>("IsTemplate")
-                        .HasColumnType("bit");
-
                     b.Property<decimal>("MinAmount")
                         .HasColumnType("decimal(18,2)");
 
-                    b.Property<int?>("UserId")
-                        .HasColumnType("int");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Vouchers");
 
@@ -674,8 +635,7 @@ namespace DoAnWebNC.Migrations
                             DiscountType = 1,
                             DiscountValue = 25m,
                             ExpiryDate = new DateTime(2025, 12, 31, 23, 59, 59, 0, DateTimeKind.Unspecified),
-                            IsActive = false,
-                            IsTemplate = true,
+                            IsActive = true,
                             MinAmount = 200000m
                         },
                         new
@@ -686,7 +646,6 @@ namespace DoAnWebNC.Migrations
                             DiscountValue = 50000m,
                             ExpiryDate = new DateTime(2025, 10, 11, 23, 59, 59, 0, DateTimeKind.Unspecified),
                             IsActive = true,
-                            IsTemplate = false,
                             MinAmount = 300000m
                         });
                 });
@@ -708,17 +667,6 @@ namespace DoAnWebNC.Migrations
                     b.Navigation("Order");
 
                     b.Navigation("Product");
-                });
-
-            modelBuilder.Entity("WebBanHang.Models.Notification", b =>
-                {
-                    b.HasOne("WebBanHang.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("User");
                 });
 
             modelBuilder.Entity("WebBanHang.Models.Order", b =>
@@ -756,15 +704,6 @@ namespace DoAnWebNC.Migrations
                         .IsRequired();
 
                     b.Navigation("Product");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("WebBanHang.Models.Voucher", b =>
-                {
-                    b.HasOne("WebBanHang.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
 
                     b.Navigation("User");
                 });

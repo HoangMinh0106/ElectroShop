@@ -1,0 +1,41 @@
+@model List<WebBanHang.Models.User>
+@using WebBanHang.Models
+
+@{
+    var voucher = ViewBag.Voucher as WebBanHang.Models.Voucher;
+    ViewData["Title"] = $"Gán Voucher: {voucher.Code}";
+ 
+}
+
+<style>
+    .assign-container { background-color: #2c2c2c; padding: 2rem; border-radius: 16px; color:white; }
+</style>
+
+
+<div class="container my-5">
+    <div class="assign-container">
+        <h2 class="mb-4">@ViewData["Title"]</h2>
+
+        <form asp-action="AssignVoucher" method="post">
+            @Html.AntiForgeryToken()
+            
+            <input type="hidden" name="voucherId" value="@voucher.Id" />
+
+            <div class="mb-3">
+                <label for="userId" class="form-label">Chọn người dùng để gán voucher:</label>
+                <select name="userId" id="userId" class="form-select" required>
+                    <option value="">-- Vui lòng chọn một người dùng --</option>
+                    @foreach (var user in Model)
+                    {
+                        <option value="@user.Id">@user.Username (Điểm: @user.Points)</option>
+                    }
+                </select>
+            </div>
+
+            <div class="mt-4">
+                <button type="submit" class="btn btn-primary">Xác nhận gán</button>
+                <a asp-action="Vouchers" class="btn btn-outline-secondary">Hủy</a>
+            </div>
+        </form>
+    </div>
+</div>
