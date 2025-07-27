@@ -1,5 +1,10 @@
 @model WebBanHang.Models.Category
 
+@{
+    ViewData["Title"] = "Thêm danh mục mới";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+
 <h2>Thêm danh mục mới</h2>
 
 <form asp-action="CreateCategory" method="post">

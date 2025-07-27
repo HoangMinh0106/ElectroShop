@@ -4,6 +4,7 @@
 @{
     var voucher = ViewBag.Voucher as WebBanHang.Models.Voucher;
     ViewData["Title"] = $"Gán Voucher: {voucher.Code}";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
     var isExpired = voucher.ExpiryDate < DateTime.Now;
 }
 
@@ -33,8 +34,8 @@
         color: white;
     }
 
-    
- 
+
+
 
     /* Main container for the form */
     .assign-panel {
@@ -66,7 +67,7 @@
         border-color: #d9232d;
         box-shadow: 0 0 0 .25rem rgba(217, 35, 45, .25);
     }
-    
+
     /* Voucher display card */
     .voucher-display-card {
         background-color: #3a3a3a;
@@ -74,9 +75,10 @@
         border-radius: 15px;
         padding: 1.5rem;
         text-align: center;
-        position: relative; /* For expired badge */
+        position: relative;
+        /* For expired badge */
     }
-    
+
     .voucher-display-card.expired {
         opacity: 0.7;
     }
@@ -100,7 +102,7 @@
         color: white;
         font-size: 1.1rem;
     }
-    
+
     .expired-badge {
         position: absolute;
         top: 15px;
@@ -112,11 +114,10 @@
         border-radius: 5px;
         font-weight: bold;
     }
-
 </style>
 
 <div class="container my-5">
-    
+
 
     <div class="row justify-content-center">
         <div class="col-lg-8">
@@ -125,7 +126,7 @@
                 <div class="mb-5">
                     <h4 class="panel-heading">Thông Tin Voucher</h4>
                     <div class="voucher-display-card @(isExpired ? "expired" : "")">
-                        @if(isExpired)
+                        @if (isExpired)
                         {
                             <div class="expired-badge">ĐÃ HẾT HẠN</div>
                         }
@@ -145,7 +146,7 @@
                         <p class="mb-2">Mã voucher:</p>
                         <h5 class="voucher-code d-inline-block">@voucher.Code</h5>
                         <hr style="border-color: #555;" />
-                        <p class="voucher-expiry small text-muted mb-0">
+                        <p class="voucher-expiry small text-light mb-0">
                             Hạn sử dụng: @voucher.ExpiryDate.ToString("dd/MM/yyyy")
                         </p>
                     </div>

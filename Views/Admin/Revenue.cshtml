@@ -1,6 +1,7 @@
 @model IEnumerable<dynamic>
 @{
     ViewData["Title"] = "Thống kê doanh thu";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
     var revenueByDay = ViewBag.RevenueByDay as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
     var revenueByMonth = ViewBag.RevenueByMonth as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
     var revenueByYear = ViewBag.RevenueByYear as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();

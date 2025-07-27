@@ -1,7 +1,10 @@
 @model WebBanHang.Models.Category
 
-<h2>Sửa danh mục</h2>
-
+@{
+    ViewData["Title"] = "Sửa danh mục";
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+}
+<h1>Chỉnh sửa danh mục</h1>
 <form asp-action="EditCategory" method="post">
     <input type="hidden" asp-for="Id" />
 
