@@ -4,38 +4,178 @@
 @{
     var voucher = ViewBag.Voucher as WebBanHang.Models.Voucher;
     ViewData["Title"] = $"Gán Voucher: {voucher.Code}";
- 
+    var isExpired = voucher.ExpiryDate < DateTime.Now;
 }
 
 <style>
-    .assign-container { background-color: #2c2c2c; padding: 2rem; border-radius: 16px; color:white; }
+    /* Inherited styles for consistency */
+    body {
+        background-color: #1a1a1a;
+        color: #f8f9fa;
+    }
+
+    .section-title {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .btn-custom-red {
+        background-color: #d9232d;
+        border-color: #d9232d;
+        color: white;
+    }
+
+    .btn-custom-red:hover {
+        background-color: #b01c24;
+        border-color: #a51a21;
+        color: white;
+    }
+
+    
+ 
+
+    /* Main container for the form */
+    .assign-panel {
+        background-color: #2c2c2c;
+        padding: 2.5rem;
+        border-radius: 15px;
+        border: 1px solid #444;
+    }
+
+    .panel-heading {
+        font-weight: 500;
+        color: #f8f9fa;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #444;
+    }
+
+    /* Dark theme for form controls */
+    .form-select-dark {
+        background-color: #3a3a3a;
+        color: white;
+        border: 1px solid #555;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23cccccc' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    }
+
+    .form-select-dark:focus {
+        background-color: #3a3a3a;
+        color: white;
+        border-color: #d9232d;
+        box-shadow: 0 0 0 .25rem rgba(217, 35, 45, .25);
+    }
+    
+    /* Voucher display card */
+    .voucher-display-card {
+        background-color: #3a3a3a;
+        border: 1px solid #555;
+        border-radius: 15px;
+        padding: 1.5rem;
+        text-align: center;
+        position: relative; /* For expired badge */
+    }
+    
+    .voucher-display-card.expired {
+        opacity: 0.7;
+    }
+
+    .voucher-display-card .voucher-discount {
+        font-size: 1.75rem;
+        font-weight: 700;
+        color: #d9232d;
+    }
+
+    .voucher-display-card .voucher-condition {
+        color: #adb5bd;
+        font-size: 0.9rem;
+    }
+
+    .voucher-display-card .voucher-code {
+        font-family: monospace;
+        background-color: #2c2c2c;
+        padding: 0.25rem 0.5rem;
+        border-radius: 5px;
+        color: white;
+        font-size: 1.1rem;
+    }
+    
+    .expired-badge {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background-color: #6c757d;
+        color: white;
+        padding: 5px 10px;
+        font-size: 0.8rem;
+        border-radius: 5px;
+        font-weight: bold;
+    }
+
 </style>
 
-
 <div class="container my-5">
-    <div class="assign-container">
-        <h2 class="mb-4">@ViewData["Title"]</h2>
+    
 
-        <form asp-action="AssignVoucher" method="post">
-            @Html.AntiForgeryToken()
-            
-            <input type="hidden" name="voucherId" value="@voucher.Id" />
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="assign-panel">
 
-            <div class="mb-3">
-                <label for="userId" class="form-label">Chọn người dùng để gán voucher:</label>
-                <select name="userId" id="userId" class="form-select" required>
-                    <option value="">-- Vui lòng chọn một người dùng --</option>
-                    @foreach (var user in Model)
-                    {
-                        <option value="@user.Id">@user.Username (Điểm: @user.Points)</option>
-                    }
-                </select>
+                <div class="mb-5">
+                    <h4 class="panel-heading">Thông Tin Voucher</h4>
+                    <div class="voucher-display-card @(isExpired ? "expired" : "")">
+                        @if(isExpired)
+                        {
+                            <div class="expired-badge">ĐÃ HẾT HẠN</div>
+                        }
+                        <div class="voucher-discount mb-2">
+                            @if (voucher.DiscountType == DiscountType.Percentage)
+                            {
+                                <span>Giảm @($"{voucher.DiscountValue:0.00}")%</span>
+                            }
+                            else
+                            {
+                                <span>Giảm @voucher.DiscountValue.ToString("N0") VNĐ</span>
+                            }
+                        </div>
+                        <p class="voucher-condition mb-3">
+                            Áp dụng cho đơn hàng từ @voucher.MinAmount.ToString("N0") VNĐ.
+                        </p>
+                        <p class="mb-2">Mã voucher:</p>
+                        <h5 class="voucher-code d-inline-block">@voucher.Code</h5>
+                        <hr style="border-color: #555;" />
+                        <p class="voucher-expiry small text-muted mb-0">
+                            Hạn sử dụng: @voucher.ExpiryDate.ToString("dd/MM/yyyy")
+                        </p>
+                    </div>
+                </div>
+
+                <div>
+                    <h4 class="panel-heading">Gán Cho Người Dùng</h4>
+                    <form asp-action="AssignVoucher" method="post">
+                        @Html.AntiForgeryToken()
+                        <input type="hidden" name="voucherId" value="@voucher.Id" />
+
+                        <div class="mb-3">
+                            <label for="userId" class="form-label">Chọn từ danh sách:</label>
+                            <select name="userId" id="userId" class="form-select form-select-dark" required>
+                                <option value="" selected disabled>-- Chọn người dùng (tên và điểm) --</option>
+                                @foreach (var user in Model)
+                                {
+                                    <option value="@user.Id">@user.Username (Điểm: @user.Points)</option>
+                                }
+                            </select>
+                        </div>
+
+                        <div class="mt-4 d-flex justify-content-end gap-2">
+                            <a asp-action="Vouchers" class="btn btn-outline-light">Quay Lại</a>
+                            <button type="submit" class="btn btn-custom-red">Xác nhận gán</button>
+                        </div>
+                    </form>
+                </div>
+
             </div>
-
-            <div class="mt-4">
-                <button type="submit" class="btn btn-primary">Xác nhận gán</button>
-                <a asp-action="Vouchers" class="btn btn-outline-secondary">Hủy</a>
-            </div>
-        </form>
+        </div>
     </div>
 </div>

@@ -1,77 +1,155 @@
 @model List<WebBanHang.Models.Voucher>
 @using WebBanHang.Models
 @{
-    ViewData["Title"] = "Ví Voucher của tôi";
+    ViewData["Title"] = "Ví Voucher của bạn";
 }
 
 <style>
-    .voucher-card {
-        background-color: #2c2c2c;
-        border-left: 5px solid #007bff;
-        border-radius: 8px;
-        padding: 1.5rem;
-        margin-bottom: 1rem;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
+    /* General styles copied from Home page for consistency */
+    body {
+        background-color: #1a1a1a;
+        color: #f8f9fa;
+    }
+
+    .section-title {
+        color: white;
+        font-weight: 600;
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+
+    .btn-custom-red {
+        background-color: #d9232d;
+        border-color: #d9232d;
+        color: white;
+        transition: background-color .2s ease-in-out, border-color .2s ease-in-out;
+    }
+
+    .btn-custom-red:hover {
+        background-color: #b01c24;
+        border-color: #a51a21;
         color: white;
     }
-    .voucher-card.expired {
-        border-left-color: #6c757d;
-        opacity: 0.6;
+
+    /* New Voucher Card Style - Inspired by Home Page's product-card */
+    .voucher-card {
+        background-color: #2c2c2c;
+        border: 1px solid #444;
+        border-radius: 15px;
+        overflow: hidden;
+        transition: transform .2s ease-in-out, box-shadow .2s ease-in-out;
+        display: flex;
+        flex-direction: column;
     }
-    .voucher-info h5 {
-        font-weight: 600;
-        letter-spacing: 1px;
-        color: #ffc107;
+
+    .voucher-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    }
+
+    .voucher-card .card-body {
+        padding: 1.5rem;
+    }
+
+    .voucher-card .voucher-code {
+        background-color: rgba(217, 35, 45, 0.1);
+        color: #d9232d;
+        font-weight: bold;
+        padding: 0.25rem 0.75rem;
+        border-radius: 50px;
+        border: 1px dashed #d9232d;
+        display: inline-block;
+        margin-bottom: 1rem;
+    }
+    
+    .voucher-card .voucher-discount {
+        color: white;
+        font-size: 1.75rem;
+        font-weight: 700;
         margin-bottom: 0.5rem;
     }
-    .voucher-details {
-        font-size: 1rem;
-    }
-    .voucher-expiry {
-        font-size: 0.9rem;
+
+    .voucher-card .voucher-condition {
         color: #adb5bd;
+        font-size: 0.9rem;
+    }
+
+    .voucher-card .voucher-expiry {
+        color: #f8f9fa;
+        font-size: 0.9rem;
+        font-weight: 500;
+    }
+    
+    /* Style for expired vouchers */
+    .voucher-card.expired {
+        opacity: 0.6;
+        filter: grayscale(80%);
+    }
+
+    .alert-custom-dark {
+        background-color: #2c2c2c;
+        color: #f8f9fa;
+        border-color: #444;
+        text-align: center;
+        padding: 2rem;
+        border-radius: 15px;
     }
 </style>
 
 <div class="container my-5">
-    <h2 class="mb-4" style="color: white; font-weight: 600;">@ViewData["Title"]</h2>
+    <h2 class="section-title">@ViewData["Title"]</h2>
 
-    @if (Model.Any())
+    @if (Model != null && Model.Any())
     {
-        @foreach (var voucher in Model)
-        {
-            var isExpired = voucher.ExpiryDate < DateTime.Now;
-            <div class="voucher-card @(isExpired ? "expired" : "")">
-                <div class="voucher-info">
-                    <h5>@voucher.Code</h5>
-                    <div class="voucher-details">
-                        @if (voucher.DiscountType == DiscountType.Percentage)
-                        {
-                            <span>Giảm @voucher.DiscountValue%</span>
-                        }
-                        else
-                        {
-                            <span>Giảm @voucher.DiscountValue.ToString("N0") VNĐ</span>
-                        }
-                        cho đơn hàng từ @voucher.MinAmount.ToString("N0") VNĐ.
-                    </div>
-                     <div class="voucher-expiry">
-                        Hạn sử dụng: @voucher.ExpiryDate.ToString("dd/MM/yyyy")
-                        @if(isExpired)
-                        {
-                            <span class="text-danger ms-2">(Đã hết hạn)</span>
-                        }
+        <div class="row">
+            @foreach (var voucher in Model)
+            {
+                var isExpired = voucher.ExpiryDate < DateTime.Now;
+                <div class="col-lg-4 col-md-6 mb-4">
+                    <div class="card voucher-card h-100 @(isExpired ? "expired" : "")">
+                        <div class="card-body d-flex flex-column text-center">
+                            
+                            <div class="voucher-discount">
+                                @if (voucher.DiscountType == DiscountType.Percentage)
+                                {
+                                    <span>Giảm @voucher.DiscountValue%</span>
+                                }
+                                else
+                                {
+                                    <span>Giảm @voucher.DiscountValue.ToString("N0")k</span>
+                                }
+                            </div>
+
+                            <p class="voucher-condition mb-3">
+                                Cho đơn hàng tối thiểu @voucher.MinAmount.ToString("N0") VNĐ
+                            </p>
+                            
+                            <div class="mt-auto">
+                                <p class="voucher-code">@voucher.Code</p>
+                                <p class="voucher-expiry mb-3">
+                                    HSD: @voucher.ExpiryDate.ToString("dd/MM/yyyy")
+                                </p>
+
+                                @if (isExpired)
+                                {
+                                    <button class="btn btn-secondary w-100" disabled>Đã hết hạn</button>
+                                }
+                                else
+                                {
+                                    <a asp-controller="Home" asp-action="Index" class="btn btn-custom-red w-100">Dùng ngay</a>
+                                }
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        }
+            }
+        </div>
     }
     else
     {
-        <div class="alert alert-secondary" role="alert">
-            Bạn chưa có voucher nào. Hãy tích cực mua sắm để nhận ưu đãi nhé!
+        <div class="alert alert-custom-dark" role="alert">
+            <h4>Kho Voucher trống</h4>
+            <p class="mb-0">Bạn chưa có voucher nào. Hãy tích cực mua sắm để nhận thêm nhiều ưu đãi hấp dẫn nhé!</p>
         </div>
     }
 </div>

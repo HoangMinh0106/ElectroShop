@@ -26,7 +26,7 @@ namespace WebBanHang.Controllers
             return View("~/Views/Admin/Index.cshtml");
         }
 
-        // === QUẢN LÝ NGƯỜI DÙNG ===
+        // quản lý người dùng
         public IActionResult AdminUser()
         {
             if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
@@ -54,7 +54,7 @@ namespace WebBanHang.Controllers
             return RedirectToAction("AdminUser");
         }
 
-        // === QUẢN LÝ DANH MỤC ===
+        // quản lý danh mục
         public IActionResult Categories()
         {
             if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
@@ -124,7 +124,7 @@ namespace WebBanHang.Controllers
             return RedirectToAction("Categories");
         }
 
-        // === QUẢN LÝ SẢN PHẨM ===
+        // quản lý sản phẩm
         public IActionResult Products()
         {
             if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
@@ -217,7 +217,7 @@ namespace WebBanHang.Controllers
             return RedirectToAction("Products");
         }
 
-        // === QUẢN LÝ DOANH THU & ĐƠN HÀNG ===
+        // quản lý doanh thu và đơn hàng
         public IActionResult Revenue()
         {
             if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
@@ -295,7 +295,7 @@ namespace WebBanHang.Controllers
             return RedirectToAction(nameof(ManageOrders));
         }
 
-        // === QUẢN LÝ VOUCHER ===
+        // quản lý voucher
         public IActionResult Vouchers()
         {
             if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
@@ -377,8 +377,8 @@ namespace WebBanHang.Controllers
             return RedirectToAction(nameof(Vouchers));
         }
 
-        // *** LOGIC GÁN VOUCHER ĐÃ CẬP NHẬT TRỪ ĐIỂM ***
-        // GET: Hiển thị trang chọn User để gán voucher
+        //
+        //Hiển thị trang chọn User để gán voucher
         [HttpGet]
         public IActionResult AssignVoucher(int voucherId)
         {
@@ -397,7 +397,7 @@ namespace WebBanHang.Controllers
             return View("~/Views/Admin/AssignVoucher.cshtml", users);
         }
 
-        // POST: Thực hiện việc gán (tạo bản sao) voucher cho user và trừ điểm
+        //Thực hiện việc gán (tạo bản sao) voucher cho user và trừ điểm
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> AssignVoucher(int voucherId, int userId)
@@ -453,7 +453,7 @@ namespace WebBanHang.Controllers
         }
 
 
-        // === QUẢN LÝ ĐÁNH GIÁ ===
+        // quản lý đánh giá sản phẩm
         public IActionResult ManageReviews()
         {
             if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)

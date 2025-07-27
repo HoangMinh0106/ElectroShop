@@ -66,11 +66,10 @@
                                         <a class="dropdown-item" asp-controller="Account" asp-action="Profile">Hồ sơ</a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" asp-controller="Account" asp-action="MyOrders">Đơn hàng của
-                                            tôi</a>
+                                        <a class="dropdown-item" asp-controller="Account" asp-action="MyOrders">Đơn hàng</a>
                                     </li>
                                     <li>
-                                        <a class="dropdown-item" asp-action="MyVouchers" asp-controller="Account" >Voucher của tôi</a>
+                                        <a class="dropdown-item" asp-action="MyVouchers" asp-controller="Account" >Voucher</a>
                                     </li>
                                     @if (HttpContextAccessor.HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) == true)
                                     {
