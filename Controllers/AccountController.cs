@@ -6,7 +6,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System;
-using WebBanHang.Services; // Thêm dòng này để sử dụng EmailService
+using WebBanHang.Services; 
 
 namespace WebBanHang.Controllers
 {
@@ -15,7 +15,7 @@ namespace WebBanHang.Controllers
         private readonly ApplicationDbContext _context;
         private readonly EmailService _emailService; // Thêm biến cho EmailService
 
-        public AccountController(ApplicationDbContext context, EmailService emailService) // Thêm EmailService vào constructor
+        public AccountController(ApplicationDbContext context, EmailService emailService) 
         {
             _context = context;
             _emailService = emailService;
