@@ -4,12 +4,22 @@ using WebBanHang.Helpers;
 using WebBanHang.Services;
 using WebBanHang.Models;
 using System.Linq;
-using System.Security.Cryptography; // Thêm using để mã hóa
-using System.Text;                // Thêm using để mã hóa
+using System.Security.Cryptography; 
+using System.Text;                
+using System.Net.Mail;
+using System.Net;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Thêm dịch vụ cho Session và HttpContextAccessor (chỉ cần 1 lần)
+// Thêm dịch vụ EmailService
+builder.Services.AddSingleton(new EmailService(
+    builder.Configuration["EmailSettings:SmtpServer"],
+    int.Parse(builder.Configuration["EmailSettings:SmtpPort"]),
+    builder.Configuration["EmailSettings:SenderEmail"],
+    builder.Configuration["EmailSettings:SenderPassword"]
+));
+
+// Thêm dịch vụ cho Session và HttpContextAccessor
 builder.Services.AddHttpContextAccessor();
 builder.Services.AddSession(options =>
 {
@@ -20,15 +30,15 @@ builder.Services.AddSession(options =>
 
 
 builder.Services.AddScoped<VnPayService>();
-builder.Services.AddScoped<CartService>(); 
+builder.Services.AddScoped<CartService>();
+
+// Đảm bảo rằng AddDbContext được gọi và cấu hình đúng
+builder.Services.AddDbContext<ApplicationDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Thêm dịch vụ cho Controller và View (MVC) và Razor Pages
 builder.Services.AddControllersWithViews();
-builder.Services.AddRazorPages(); // Thêm dịch vụ cho Razor Pages
-
-// Thêm DbContext
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddRazorPages(); 
 
 //dịch vụ cho AutoVoucherService
 builder.Services.AddHostedService<AutoVoucherService>();
@@ -81,8 +91,8 @@ using (var scope = app.Services.CreateScope())
                 return BitConverter.ToString(hashedBytes).Replace("-", "").ToLower();
             }
         }
-        
-        
+
+
         dbContext.Users.Add(new User
         {
             Username = "admin",

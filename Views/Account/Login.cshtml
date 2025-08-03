@@ -20,7 +20,8 @@
     .login-title {
         font-size: 24px;
         font-weight: bold;
-        color: #d70018; /* đỏ chủ đạo giống Shopee */
+        color: #d70018;
+        /* đỏ chủ đạo giống Shopee */
         text-align: center;
         margin-bottom: 20px;
     }
@@ -84,9 +85,12 @@
         </div>
         <button type="submit" class="btn btn-login">Đăng nhập</button>
     </form>
+    <div class="text-center mt-3"><a href="/Account/ForgotPassword" class="forgot-password-link">Quên mật khẩu?</a></div>
+    
 
-    <div class="login-footer mt-3" style="color: #333;">
-        Chưa có tài khoản?
-        <a asp-controller="Account" asp-action="Register">Đăng ký ngay</a>
-    </div>
+
+<div class="login-footer mt-3" style="color: #333;">
+    Chưa có tài khoản?
+    <a asp-controller="Account" asp-action="Register">Đăng ký ngay</a>
+</div>
 </div>

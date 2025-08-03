@@ -4,17 +4,21 @@ using WebBanHang.Data;
 using Microsoft.AspNetCore.Http;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
-using System.Threading.Tasks; 
+using System.Threading.Tasks;
+using System;
+using WebBanHang.Services; // Thêm dòng này để sử dụng EmailService
 
 namespace WebBanHang.Controllers
 {
     public class AccountController : Controller
     {
         private readonly ApplicationDbContext _context;
+        private readonly EmailService _emailService; // Thêm biến cho EmailService
 
-        public AccountController(ApplicationDbContext context)
+        public AccountController(ApplicationDbContext context, EmailService emailService) // Thêm EmailService vào constructor
         {
             _context = context;
+            _emailService = emailService;
         }
 
 
@@ -65,7 +69,90 @@ namespace WebBanHang.Controllers
             ViewBag.Error = "Sai tên đăng nhập hoặc mật khẩu.";
             return View();
         }
+        // Action để hiển thị trang nhập email
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
 
+        //Xử lý yêu cầu gửi email
+        [HttpPost]
+        public async Task<IActionResult> ForgotPassword(string email)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == email);
+            if (user != null)
+            {
+                // 1. Tạo token và lưu vào DB
+                var resetToken = Guid.NewGuid().ToString();
+                user.PasswordResetToken = resetToken;
+                user.PasswordResetTokenExpiry = DateTime.UtcNow.AddHours(1);
+                await _context.SaveChangesAsync();
+
+                // 2. Gửi email
+                var resetUrl = Url.Action("ResetPassword", "Account", new { token = resetToken }, Request.Scheme);
+                await _emailService.SendEmailAsync(
+                    user.Email,
+                    "Khôi phục mật khẩu",
+                    $"<p>Chào bạn,</p>" +
+                    $"<p>Chúng tôi nhận được yêu cầu đặt lại mật khẩu cho tài khoản của bạn. Vui lòng nhấp vào liên kết dưới đây để tạo mật khẩu mới:</p>" +
+                    $"<p><a href='{resetUrl}'>{resetUrl}</a></p>" +
+                    $"<p>Nếu bạn không yêu cầu đặt lại mật khẩu, vui lòng bỏ qua email này.</p>" +
+                    $"<p>Trân trọng,</p>" +
+                    $"<p>Đội ngũ hỗ trợ ElectroShop</p>"
+                );
+
+                ViewBag.Message = "Liên kết khôi phục mật khẩu đã được gửi đến email của bạn.";
+            }
+            else
+            {
+                ViewBag.Error = "Không tìm thấy người dùng với địa chỉ email này.";
+            }
+
+            return View();
+        }
+
+        // Action để hiển thị trang đặt lại mật khẩu
+        public async Task<IActionResult> ResetPassword(string token)
+        {
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.PasswordResetToken == token && u.PasswordResetTokenExpiry > DateTime.UtcNow);
+            if (user == null)
+            {
+                ViewBag.Error = "Liên kết khôi phục không hợp lệ hoặc đã hết hạn.";
+                return View("Error"); // Bạn có thể tạo một trang Error riêng
+            }
+
+            ViewBag.Token = token;
+            return View();
+        }
+
+        // Xử lý việc cập nhật mật khẩu mới
+        [HttpPost]
+        public async Task<IActionResult> ResetPassword(string token, string newPassword, string confirmPassword)
+        {
+            if (newPassword != confirmPassword)
+            {
+                ViewBag.Error = "Mật khẩu mới và mật khẩu xác nhận không khớp.";
+                ViewBag.Token = token;
+                return View();
+            }
+
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.PasswordResetToken == token && u.PasswordResetTokenExpiry > DateTime.UtcNow);
+            if (user == null)
+            {
+                ViewBag.Error = "Liên kết khôi phục không hợp lệ hoặc đã hết hạn.";
+                return View("Error");
+            }
+
+            user.Password = newPassword;
+
+            // Xóa token sau khi đã sử dụng
+            user.PasswordResetToken = null;
+            user.PasswordResetTokenExpiry = null;
+            await _context.SaveChangesAsync();
+
+            ViewBag.Message = "Mật khẩu của bạn đã được đặt lại thành công.";
+            return RedirectToAction("Login");
+        }
 
         public IActionResult Logout()
         {
@@ -147,9 +234,9 @@ namespace WebBanHang.Controllers
 
             // Lọc ra các đơn hàng có UserId khớp với Id của người dùng
             var userOrders = _context.Orders
-                                     .Where(order => order.UserId == user.Id)
-                                     .OrderByDescending(o => o.OrderDate)
-                                     .ToList();
+                                    .Where(order => order.UserId == user.Id)
+                                    .OrderByDescending(o => o.OrderDate)
+                                    .ToList();
 
             return View(userOrders);
         }
@@ -177,6 +264,6 @@ namespace WebBanHang.Controllers
             return View(userVouchers);
         }
 
-        
+
     }
 }

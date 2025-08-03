@@ -1,4 +1,4 @@
-using System.Collections.Generic; 
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 
 namespace WebBanHang.Models
@@ -24,6 +24,10 @@ namespace WebBanHang.Models
 
         [Required]
         public string? Role { get; set; } = "User";
+
+        public string Email { get; set; }
+        public string? PasswordResetToken { get; set; }
+        public DateTime? PasswordResetTokenExpiry { get; set; }
 
         [Required]
         public ICollection<Order> Orders { get; set; } = new List<Order>();
