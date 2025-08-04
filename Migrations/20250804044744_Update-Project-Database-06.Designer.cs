@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebBanHang.Data;
 
@@ -11,9 +12,11 @@ using WebBanHang.Data;
 namespace DoAnWebNC.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250804044744_Update-Project-Database-06")]
+    partial class UpdateProjectDatabase06
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -416,42 +419,6 @@ namespace DoAnWebNC.Migrations
                             ImageUrl = "/Image/keyboard4.png",
                             Name = "Bàn phím Keychron B1P",
                             Price = 880000m
-                        },
-                        new
-                        {
-                            Id = 35,
-                            CategoryId = 5,
-                            Description = "Không dây/Tốc độ cao",
-                            ImageUrl = "/Image/mouse1.png",
-                            Name = "Chuột ASUS ROG Strix Impact",
-                            Price = 1090000m
-                        },
-                        new
-                        {
-                            Id = 36,
-                            CategoryId = 5,
-                            Description = "Có dây X2H Medium White",
-                            ImageUrl = "/Image/mouse1.png",
-                            Name = "Chuột Pulsar ",
-                            Price = 1249000m
-                        },
-                        new
-                        {
-                            Id = 37,
-                            CategoryId = 5,
-                            Description = "RGB Superlight Wireless Pink",
-                            ImageUrl = "/Image/mouse3.png",
-                            Name = "Chuột DareU EM901X",
-                            Price = 680000m
-                        },
-                        new
-                        {
-                            Id = 38,
-                            CategoryId = 5,
-                            Description = "RZ01-03850100-R3M1",
-                            ImageUrl = "/Image/mouse4.png",
-                            Name = "Chuột Razer DeathAdder Essential ",
-                            Price = 400000m
                         });
                 });
 

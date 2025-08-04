@@ -60,7 +60,7 @@ namespace WebBanHang.Controllers
             if (!string.IsNullOrEmpty(appliedVoucherCode))
             {
                 var voucher = _context.Vouchers.FirstOrDefault(v => v.Code == appliedVoucherCode && v.IsActive && v.ExpiryDate > DateTime.Now);
-                // --- CHỈ THÊM ĐIỀU KIỆN KIỂM TRA USER VÀO ĐÂY ---
+                // thêm điều kiện kiểm tra UserId
                 if (voucher != null && subTotal >= voucher.MinAmount && (voucher.UserId == null || voucher.UserId == user.Id))
                 {
                     discountAmount = voucher.DiscountType == DiscountType.FixedAmount
@@ -87,7 +87,7 @@ namespace WebBanHang.Controllers
                 SubTotal = subTotal,
                 DiscountAmount = discountAmount,
                 GrandTotal = grandTotal,
-                // --- THÊM DÒNG NÀY ĐỂ HIỂN THỊ LẠI MÃ VOUCHER ---
+                // hiển thị mã voucher đã áp dụng
                 AppliedVoucherCode = appliedVoucherCode
             };
             return View(model);
@@ -130,7 +130,7 @@ namespace WebBanHang.Controllers
             if (!string.IsNullOrEmpty(appliedVoucherCode))
             {
                 var voucher = _context.Vouchers.FirstOrDefault(v => v.Code == appliedVoucherCode && v.IsActive && v.ExpiryDate > DateTime.Now);
-                // --- CHỈ THÊM ĐIỀU KIỆN KIỂM TRA USER VÀO ĐÂY ---
+                // kiểm tra UserId của voucher
                 if (voucher != null && subTotal >= voucher.MinAmount && (voucher.UserId == null || voucher.UserId == user.Id))
                 {
                     discountAmount = voucher.DiscountType == DiscountType.FixedAmount

@@ -1,7 +1,6 @@
 using System;
 using System.ComponentModel.DataAnnotations;
 
-// Đảm bảo namespace là "WebBanHang.Models"
 namespace WebBanHang.Models
 {
     public class Review

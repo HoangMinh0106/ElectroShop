@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using WebBanHang.Data;
 
@@ -11,9 +12,11 @@ using WebBanHang.Data;
 namespace DoAnWebNC.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20250804040147_Update-Project-Database-02")]
+    partial class UpdateProjectDatabase02
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -287,7 +290,7 @@ namespace DoAnWebNC.Migrations
                             Id = 11,
                             CategoryId = 2,
                             Description = "i7-13700HX/512GB/16GB",
-                            ImageUrl = "/Image/gaming1.png",
+                            ImageUrl = "/images/gaming1.pnj",
                             Name = "Laptop gaming HP Victus 16",
                             Price = 22000000m
                         },
@@ -295,163 +298,262 @@ namespace DoAnWebNC.Migrations
                         {
                             Id = 12,
                             CategoryId = 2,
-                            Description = "R5-7235HS/512GB/24GB",
-                            ImageUrl = "/Image/gaming2.png",
-                            Name = "Laptop gaming Lenovo LOQ 15ARP9",
+                            Description = "Laptop gaming cấu hình khủng 2",
+                            ImageUrl = "/images/gaming2.jpg",
+                            Name = "Laptop Gaming 2",
                             Price = 23000000m
                         },
                         new
                         {
                             Id = 13,
                             CategoryId = 2,
-                            Description = "i5-13420H/512GB/32GB",
-                            ImageUrl = "/Image/gaming3.png",
-                            Name = "Laptop gaming Acer Nitro V ",
+                            Description = "Laptop gaming cấu hình khủng 3",
+                            ImageUrl = "/images/gaming3.jpg",
+                            Name = "Laptop Gaming 3",
                             Price = 24000000m
                         },
                         new
                         {
                             Id = 14,
                             CategoryId = 2,
-                            Description = "i5-12450HX/512GB/16GB",
-                            ImageUrl = "/Image/gaming4.png",
-                            Name = "Laptop gaming Lenovo LOQ 15IAX9E",
+                            Description = "Laptop gaming cấu hình khủng 4",
+                            ImageUrl = "/images/gaming4.jpg",
+                            Name = "Laptop Gaming 4",
                             Price = 25000000m
                         },
                         new
                         {
                             Id = 15,
                             CategoryId = 2,
-                            Description = "i5-13420H/512GB/16GB",
-                            ImageUrl = "/Image/gaming5.png",
-                            Name = "Laptop gaming MSI Thin 15",
+                            Description = "Laptop gaming cấu hình khủng 5",
+                            ImageUrl = "/images/gaming5.jpg",
+                            Name = "Laptop Gaming 5",
                             Price = 26000000m
                         },
                         new
                         {
                             Id = 16,
                             CategoryId = 2,
-                            Description = "i7-13620H/512GB/16GB",
-                            ImageUrl = "/Image/gaming6.png",
-                            Name = "Laptop gaming Gigabyte G5",
+                            Description = "Laptop gaming cấu hình khủng 6",
+                            ImageUrl = "/images/gaming6.jpg",
+                            Name = "Laptop Gaming 6",
                             Price = 27000000m
                         },
                         new
                         {
                             Id = 17,
                             CategoryId = 2,
-                            Description = "i7-13620H/512GB/8GB",
-                            ImageUrl = "/Image/gaming7.png",
-                            Name = "Laptop gaming MSI Katana 15",
+                            Description = "Laptop gaming cấu hình khủng 7",
+                            ImageUrl = "/images/gaming7.jpg",
+                            Name = "Laptop Gaming 7",
                             Price = 28000000m
+                        },
+                        new
+                        {
+                            Id = 18,
+                            CategoryId = 2,
+                            Description = "Laptop gaming cấu hình khủng 8",
+                            ImageUrl = "/images/gaming8.jpg",
+                            Name = "Laptop Gaming 8",
+                            Price = 29000000m
+                        },
+                        new
+                        {
+                            Id = 19,
+                            CategoryId = 2,
+                            Description = "Laptop gaming cấu hình khủng 9",
+                            ImageUrl = "/images/gaming9.jpg",
+                            Name = "Laptop Gaming 9",
+                            Price = 30000000m
+                        },
+                        new
+                        {
+                            Id = 20,
+                            CategoryId = 2,
+                            Description = "Laptop gaming cấu hình khủng 10",
+                            ImageUrl = "/images/gaming10.jpg",
+                            Name = "Laptop Gaming 10",
+                            Price = 31000000m
                         },
                         new
                         {
                             Id = 21,
                             CategoryId = 3,
-                            Description = "25inch/180Hz",
-                            ImageUrl = "/Image/monitor1.png",
-                            Name = "Màn hình Asus TUF GAMING",
+                            Description = "Màn hình sắc nét 1",
+                            ImageUrl = "/images/monitor1.jpg",
+                            Name = "Màn hình 1",
                             Price = 4000000m
                         },
                         new
                         {
                             Id = 22,
                             CategoryId = 3,
-                            Description = "22inch/100Hz",
-                            ImageUrl = "/Image/monitor2.png",
-                            Name = "Màn hình ViewSonic VA2215-H",
+                            Description = "Màn hình sắc nét 2",
+                            ImageUrl = "/images/monitor2.jpg",
+                            Name = "Màn hình 2",
                             Price = 4200000m
                         },
                         new
                         {
                             Id = 23,
                             CategoryId = 3,
-                            Description = "23inch/200Hz",
-                            ImageUrl = "/Image/monitor3.png",
-                            Name = "Màn hình Acer KG240Y-X1",
+                            Description = "Màn hình sắc nét 3",
+                            ImageUrl = "/images/monitor3.jpg",
+                            Name = "Màn hình 3",
                             Price = 4300000m
                         },
                         new
                         {
                             Id = 24,
                             CategoryId = 3,
-                            Description = "27inch/165Hz",
-                            ImageUrl = "/Image/monitor4.png",
-                            Name = "Màn hình LG 27GR75Q-B",
+                            Description = "Màn hình sắc nét 4",
+                            ImageUrl = "/images/monitor4.jpg",
+                            Name = "Màn hình 4",
                             Price = 4400000m
+                        },
+                        new
+                        {
+                            Id = 25,
+                            CategoryId = 3,
+                            Description = "Màn hình sắc nét 5",
+                            ImageUrl = "/images/monitor5.jpg",
+                            Name = "Màn hình 5",
+                            Price = 4600000m
+                        },
+                        new
+                        {
+                            Id = 26,
+                            CategoryId = 3,
+                            Description = "Màn hình sắc nét 6",
+                            ImageUrl = "/images/monitor6.jpg",
+                            Name = "Màn hình 6",
+                            Price = 4700000m
+                        },
+                        new
+                        {
+                            Id = 27,
+                            CategoryId = 3,
+                            Description = "Màn hình sắc nét 7",
+                            ImageUrl = "/images/monitor7.jpg",
+                            Name = "Màn hình 7",
+                            Price = 4500000m
+                        },
+                        new
+                        {
+                            Id = 28,
+                            CategoryId = 3,
+                            Description = "Màn hình sắc nét 8",
+                            ImageUrl = "/images/monitor8.jpg",
+                            Name = "Màn hình 8",
+                            Price = 4800000m
+                        },
+                        new
+                        {
+                            Id = 29,
+                            CategoryId = 3,
+                            Description = "Màn hình sắc nét 9",
+                            ImageUrl = "/images/monitor9.jpg",
+                            Name = "Màn hình 9",
+                            Price = 4900000m
+                        },
+                        new
+                        {
+                            Id = 30,
+                            CategoryId = 3,
+                            Description = "Màn hình sắc nét 10",
+                            ImageUrl = "/images/monitor10.jpg",
+                            Name = "Màn hình 10",
+                            Price = 5000000m
                         },
                         new
                         {
                             Id = 31,
                             CategoryId = 4,
-                            Description = "Hồng gradient/Black King magnetic switch",
-                            ImageUrl = "/Image/keyboard1.png",
-                            Name = "Bàn phím AULA HERO68HE",
-                            Price = 900000m
+                            Description = "Bàn phím cơ học 1",
+                            ImageUrl = "/images/keyboard1.jpg",
+                            Name = "Bàn phím 1",
+                            Price = 800000m
                         },
                         new
                         {
                             Id = 32,
                             CategoryId = 4,
-                            Description = "Plus Black & Gold Fairy (Silent) switch",
-                            ImageUrl = "/Image/keyboard2.png",
-                            Name = "Bàn phím AKKO 3098B",
+                            Description = "Bàn phím cơ học 2",
+                            ImageUrl = "/images/keyboard2.jpg",
+                            Name = "Bàn phím 2",
                             Price = 850000m
                         },
                         new
                         {
                             Id = 33,
                             CategoryId = 4,
-                            Description = "Trắng/Light feather switch",
-                            ImageUrl = "/Image/keyboard3.png",
-                            Name = "Bàn phím Leobog AMG65 TM",
+                            Description = "Bàn phím cơ học 3",
+                            ImageUrl = "/images/keyboard3.jpg",
+                            Name = "Bàn phím 3",
                             Price = 820000m
                         },
                         new
                         {
                             Id = 34,
                             CategoryId = 4,
-                            Description = "Space Gray Scissor",
-                            ImageUrl = "/Image/keyboard4.png",
-                            Name = "Bàn phím Keychron B1P",
+                            Description = "Bàn phím cơ học 4",
+                            ImageUrl = "/images/keyboard4.jpg",
+                            Name = "Bàn phím 4",
                             Price = 880000m
                         },
                         new
                         {
                             Id = 35,
-                            CategoryId = 5,
-                            Description = "Không dây/Tốc độ cao",
-                            ImageUrl = "/Image/mouse1.png",
-                            Name = "Chuột ASUS ROG Strix Impact",
-                            Price = 1090000m
+                            CategoryId = 4,
+                            Description = "Bàn phím cơ học 5",
+                            ImageUrl = "/images/keyboard5.jpg",
+                            Name = "Bàn phím 5",
+                            Price = 900000m
                         },
                         new
                         {
                             Id = 36,
-                            CategoryId = 5,
-                            Description = "Có dây X2H Medium White",
-                            ImageUrl = "/Image/mouse1.png",
-                            Name = "Chuột Pulsar ",
-                            Price = 1249000m
+                            CategoryId = 4,
+                            Description = "Bàn phím cơ học 6",
+                            ImageUrl = "/images/keyboard6.jpg",
+                            Name = "Bàn phím 6",
+                            Price = 920000m
                         },
                         new
                         {
                             Id = 37,
-                            CategoryId = 5,
-                            Description = "RGB Superlight Wireless Pink",
-                            ImageUrl = "/Image/mouse3.png",
-                            Name = "Chuột DareU EM901X",
-                            Price = 680000m
+                            CategoryId = 4,
+                            Description = "Bàn phím cơ học 7",
+                            ImageUrl = "/images/keyboard7.jpg",
+                            Name = "Bàn phím 7",
+                            Price = 950000m
                         },
                         new
                         {
                             Id = 38,
-                            CategoryId = 5,
-                            Description = "RZ01-03850100-R3M1",
-                            ImageUrl = "/Image/mouse4.png",
-                            Name = "Chuột Razer DeathAdder Essential ",
-                            Price = 400000m
+                            CategoryId = 4,
+                            Description = "Bàn phím cơ học 8",
+                            ImageUrl = "/images/keyboard8.jpg",
+                            Name = "Bàn phím 8",
+                            Price = 970000m
+                        },
+                        new
+                        {
+                            Id = 39,
+                            CategoryId = 4,
+                            Description = "Bàn phím cơ học 9",
+                            ImageUrl = "/images/keyboard9.jpg",
+                            Name = "Bàn phím 9",
+                            Price = 990000m
+                        },
+                        new
+                        {
+                            Id = 40,
+                            CategoryId = 4,
+                            Description = "Bàn phím cơ học 10",
+                            ImageUrl = "/images/keyboard10.jpg",
+                            Name = "Bàn phím 10",
+                            Price = 1000000m
                         });
                 });
 

@@ -25,7 +25,7 @@ namespace WebBanHang.Models
         [Required]
         public string? Role { get; set; } = "User";
 
-        public string Email { get; set; }
+        public string? Email { get; set; }
         public string? PasswordResetToken { get; set; }
         public DateTime? PasswordResetTokenExpiry { get; set; }
 

@@ -32,7 +32,7 @@ namespace WebBanHang.Models
         // ? userid có thể null nếu voucher không gán cho người dùng nào
         public int? UserId { get; set; }
 
-        //navigation property để liên kết với User 
+        
         [ForeignKey("UserId")]
         public User? User { get; set; }
         
