@@ -90,9 +90,15 @@
     <div class="product-detail-card">
         <div class="row align-items-center">
             <div class="col-lg-6">
-                <img src="@Model.ImageUrl" class="product-image" alt="@Model.Name">
+                @if (Model.ImageData != null && Model.ImageData.Length > 0)
+                {
+                    <img src="@Url.Action("GetProductImage", "Admin", new { id = Model.Id })" class="product-image" alt="@Model.Name">
+                }
+                else
+                {
+                    <img src="https://via.placeholder.com/500" class="product-image" alt="Không có ảnh">
+                }
             </div>
-
             <div class="col-lg-6">
                 <h2 class="product-title mb-2">@Model.Name</h2>
                 

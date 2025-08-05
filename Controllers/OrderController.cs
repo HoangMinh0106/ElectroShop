@@ -31,7 +31,7 @@ namespace WebBanHang.Controllers
         }
 
 
-        public IActionResult Checkout()
+        public async Task<IActionResult> Checkout()
         {
             var cartItems = HttpContext.Session.GetObjectFromJson<List<CartItem>>(CartSession) ?? new List<CartItem>();
             if (!cartItems.Any())
@@ -45,12 +45,23 @@ namespace WebBanHang.Controllers
             {
                 return RedirectToAction("Login", "Account");
             }
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
             if (user == null)
             {
                 TempData["Message"] = "Không tìm thấy người dùng!";
                 return RedirectToAction("Login", "Account");
             }
+            
+            // Bổ sung đoạn code này để lấy ImageUrl từ database
+            foreach (var item in cartItems)
+            {
+                var product = await _context.Products.FindAsync(item.ProductId);
+                if (product != null)
+                {
+                    item.ImageUrl = product.ImageUrl;
+                }
+            }
+
 
             // Tính toán tổng tiền và áp dụng voucher
             var subTotal = cartItems.Sum(item => (item.Price ?? 0) * item.Quantity);
@@ -59,7 +70,7 @@ namespace WebBanHang.Controllers
 
             if (!string.IsNullOrEmpty(appliedVoucherCode))
             {
-                var voucher = _context.Vouchers.FirstOrDefault(v => v.Code == appliedVoucherCode && v.IsActive && v.ExpiryDate > DateTime.Now);
+                var voucher = await _context.Vouchers.FirstOrDefaultAsync(v => v.Code == appliedVoucherCode && v.IsActive && v.ExpiryDate > DateTime.Now);
                 // thêm điều kiện kiểm tra UserId
                 if (voucher != null && subTotal >= voucher.MinAmount && (voucher.UserId == null || voucher.UserId == user.Id))
                 {
@@ -95,16 +106,25 @@ namespace WebBanHang.Controllers
 
     
         [HttpPost]
-        public IActionResult Checkout(CheckoutViewModel model)
+        public async Task<IActionResult> Checkout(CheckoutViewModel model)
         {
+            // Bổ sung đoạn code này để lấy ImageUrl từ database cho model
+            var cartItemsForView = HttpContext.Session.GetObjectFromJson<List<CartItem>>(CartSession) ?? new List<CartItem>();
+            foreach (var item in cartItemsForView)
+            {
+                var product = await _context.Products.FindAsync(item.ProductId);
+                if (product != null)
+                {
+                    item.ImageUrl = product.ImageUrl;
+                }
+            }
+            model.CartItems = cartItemsForView;
+            
             if (!ModelState.IsValid)
             {
-                var cartItemsForView = HttpContext.Session.GetObjectFromJson<List<CartItem>>(CartSession) ?? new List<CartItem>();
                 var subTotalForView = cartItemsForView.Sum(item => (item.Price ?? 0) * item.Quantity);
-
-                model.CartItems = cartItemsForView;
                 model.SubTotal = subTotalForView;
-   
+    
                 return View(model);
             }
 
@@ -116,7 +136,7 @@ namespace WebBanHang.Controllers
             }
 
             var username = HttpContext.Session.GetString("Username");
-            var user = _context.Users.FirstOrDefault(u => u.Username == username);
+            var user = await _context.Users.FirstOrDefaultAsync(u => u.Username == username);
 
             if (user == null)
             {
@@ -129,7 +149,7 @@ namespace WebBanHang.Controllers
 
             if (!string.IsNullOrEmpty(appliedVoucherCode))
             {
-                var voucher = _context.Vouchers.FirstOrDefault(v => v.Code == appliedVoucherCode && v.IsActive && v.ExpiryDate > DateTime.Now);
+                var voucher = await _context.Vouchers.FirstOrDefaultAsync(v => v.Code == appliedVoucherCode && v.IsActive && v.ExpiryDate > DateTime.Now);
                 // kiểm tra UserId của voucher
                 if (voucher != null && subTotal >= voucher.MinAmount && (voucher.UserId == null || voucher.UserId == user.Id))
                 {
@@ -164,7 +184,7 @@ namespace WebBanHang.Controllers
             };
 
             _context.Orders.Add(order);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
             if (model.PaymentMethod == "VNPAY")
             {
@@ -181,7 +201,7 @@ namespace WebBanHang.Controllers
             else
             {
                 order.PaymentStatus = "COD";
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
 
                 HttpContext.Session.Remove(CartSession);
                 HttpContext.Session.Remove(VoucherSession);
@@ -241,8 +261,8 @@ namespace WebBanHang.Controllers
         public IActionResult OrderConfirmation(int id)
         {
             var order = _context.Orders.Include(o => o.OrderItems)
-                                       .ThenInclude(oi => oi.Product)
-                                       .FirstOrDefault(o => o.Id == id);
+                                         .ThenInclude(oi => oi.Product)
+                                         .FirstOrDefault(o => o.Id == id);
             if (order == null) return NotFound();
             return View(order);
         }

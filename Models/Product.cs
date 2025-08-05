@@ -15,12 +15,13 @@ namespace WebBanHang.Models
 
         public string? Description { get; set; }
 
+        public byte[]? ImageData { get; set; }
         public string? ImageUrl { get; set; }
 
         [Display(Name = "Danh mục")]
         public int? CategoryId { get; set; }
 
-        public Category Category { get; set; }
+        public Category? Category { get; set; }
 
         public ICollection<Review> Reviews { get; set; } = new List<Review>();
     }

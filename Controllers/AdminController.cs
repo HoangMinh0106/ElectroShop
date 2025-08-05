@@ -141,6 +141,7 @@ namespace WebBanHang.Controllers
             return View("~/Views/Admin/CreateProduct.cshtml");
         }
 
+
         [HttpPost]
         public async Task<IActionResult> CreateProduct(Product product, IFormFile ImageFile)
         {
@@ -148,14 +149,22 @@ namespace WebBanHang.Controllers
             {
                 if (ImageFile != null && ImageFile.Length > 0)
                 {
-                    var fileName = Path.GetRandomFileName() + Path.GetExtension(ImageFile.FileName);
-                    var filePath = Path.Combine("wwwroot/Image", fileName);
-                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    // Đọc dữ liệu ảnh từ IFormFile vào mảng byte
+                    using (var memoryStream = new MemoryStream())
                     {
-                        await ImageFile.CopyToAsync(stream);
+                        await ImageFile.CopyToAsync(memoryStream);
+                        product.ImageData = memoryStream.ToArray();
+                        // Bạn có thể không cần lưu ImageUrl nữa
+                        product.ImageUrl = null;
                     }
-                    product.ImageUrl = "/Image/" + fileName;
                 }
+                else
+                {
+                    // Xử lý trường hợp không có ảnh được tải lên (ví dụ: gán ImageData = null)
+                    product.ImageData = null;
+                    product.ImageUrl = null;
+                }
+
                 _context.Products.Add(product);
                 await _context.SaveChangesAsync();
                 return RedirectToAction("Products");
@@ -163,7 +172,16 @@ namespace WebBanHang.Controllers
             ViewBag.Categories = _context.Categories.ToList();
             return View("~/Views/Admin/CreateProduct.cshtml", product);
         }
-
+        public IActionResult GetProductImage(int id)
+        {
+            var product = _context.Products.FirstOrDefault(p => p.Id == id);
+            if (product != null && product.ImageData != null)
+            {
+                // Trả về dữ liệu ảnh dưới dạng FileContentResult
+                return File(product.ImageData, "image/jpeg"); // hoặc "image/png" tùy loại ảnh
+            }
+            return NotFound(); // Hoặc trả về ảnh placeholder
+        }
         public IActionResult EditProduct(int id)
         {
             if (HttpContext.Session.GetString("Role")?.Equals("Admin", StringComparison.OrdinalIgnoreCase) != true)
@@ -445,7 +463,7 @@ namespace WebBanHang.Controllers
                 Url = "/Account/MyVouchers" // Link tới trang Ví Voucher
             };
             _context.Notifications.Add(notification);
-           
+
             await _context.SaveChangesAsync();
 
             TempData["Message"] = $"Đã gán voucher '{templateVoucher.Code}' cho người dùng '{targetUser.Username}' và trừ {pointsToDeduct} điểm thành công!";

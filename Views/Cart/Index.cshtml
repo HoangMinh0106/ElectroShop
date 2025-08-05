@@ -179,7 +179,16 @@
                                 {
                                     var item = Model.CartItems[i];
                                     <tr>
-                                        <td><img src="@item.ImageUrl" alt="Ảnh" width="60" /></td>
+                                        <td>
+                                            @if (item.ImageData != null && item.ImageData.Length > 0)
+                                            {
+                                                <img src="@Url.Action("GetProductImage", "Admin", new { id = item.ProductId })" alt="Ảnh" width="60" />
+                                            }
+                                            else
+                                            {
+                                                <img src="https://via.placeholder.com/60" alt="Không có ảnh" width="60" />
+                                            }
+                                        </td>
                                         <td>@item.ProductName</td>
                                         <td>@item.Price?.ToString("N0") VNĐ</td>
                                         <td>

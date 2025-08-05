@@ -126,9 +126,13 @@
                         </td>
                         <td>@String.Format("{0:N0} ₫", product.Price)</td>
                         <td>
-                            @if (!string.IsNullOrEmpty(product.ImageUrl))
+                            @if (product.ImageData != null && product.ImageData.Length > 0)
                             {
-                                <img src="@product.ImageUrl" alt="Ảnh sản phẩm" class="table-img" />
+                                <img src="@Url.Action("GetProductImage", "Admin", new { id = product.Id })" alt="Ảnh sản phẩm" class="table-img" />
+                            }
+                            else
+                            {
+                                <span>Không có ảnh</span>
                             }
                         </td>
                         <td>

@@ -165,7 +165,7 @@ namespace WebBanHang.Controllers
             {
                 TempData["Message"] = $"Voucher chỉ áp dụng cho đơn hàng từ {voucher.MinAmount:N0}đ.";
             }
-            // --- PHẦN ĐƯỢC THÊM VÀO ---
+            
             else
             {
                 var username = HttpContext.Session.GetString("Username");
@@ -187,11 +187,7 @@ namespace WebBanHang.Controllers
                     TempData["Message"] = "Áp dụng voucher thành công!";
                 }
             }
-            // --- KẾT THÚC PHẦN THÊM VÀO ---
-
-            // LƯU Ý: Dòng này đang chuyển hướng về trang giỏ hàng. 
-            // Nếu bạn muốn nó hoạt động ở trang thanh toán, bạn cần đổi "Index" thành "Checkout" và Controller "Cart" thành "Order".
-            // Ví dụ: return RedirectToAction("Checkout", "Order");
+           
             return RedirectToAction("Index");
             
         }
@@ -200,7 +196,7 @@ namespace WebBanHang.Controllers
         {
             HttpContext.Session.Remove(VoucherSession);
             TempData["Message"] = "Đã xóa voucher.";
-            // Tương tự như trên, bạn có thể cần đổi RedirectToAction tại đây.
+            
             return RedirectToAction("Index");
         }
     }

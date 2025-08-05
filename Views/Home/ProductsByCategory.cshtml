@@ -52,6 +52,7 @@
     .product-card .price {
         font-size: 1.25rem;
         font-weight: bold;
+        text-align: center;
         color: #ffffff;
     }
     .product-card .action-buttons .btn {
@@ -101,7 +102,14 @@
             {
                 <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
                     <div class="card product-card h-100">
-                        <img src="@product.ImageUrl" class="card-img-top" alt="@product.Name" />
+                        @if (product.ImageData != null && product.ImageData.Length > 0)
+                        {
+                            <img src="@Url.Action("GetProductImage", "Admin", new { id = product.Id })" class="card-img-top" alt="@product.Name" />
+                        }
+                        else
+                        {
+                            <img src="https://via.placeholder.com/250" class="card-img-top" alt="Không có ảnh" />
+                        }
                         <div class="card-body d-flex flex-column">
                             <h5 class="card-title">@product.Name</h5>
                             <p class="card-text text-muted small flex-grow-1">@product.Description</p>
